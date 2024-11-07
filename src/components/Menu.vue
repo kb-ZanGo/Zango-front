@@ -1,11 +1,9 @@
 <template lang="">
   <div class="menu">
-    <div class="btn-group" role="group" aria-label="Basic example">
-      <button type="button" class="btn btn-custom">출석 체크</button>
-      <button type="button" class="btn btn-custom">룰렛</button>
-      <button type="button" class="btn btn-custom">퀴즈</button>
-      <button type="button" class="btn btn-custom" @click="zzanda">짠다</button>
-    </div>
+    <button type="button" class="btn btn-custom">출첵</button>
+    <button type="button" class="btn btn-custom">룰렛</button>
+    <button type="button" class="btn btn-custom">퀴즈</button>
+    <button type="button" class="btn btn-custom" @click="zzanda">짠다</button>
   </div>
 </template>
 <script setup>
@@ -18,18 +16,16 @@ const zzanda = () => {
 </script>
 <style>
 .menu {
-  width: 618px;
-  height: 85px;
-  background-color: white;
-  border-bottom-left-radius: 10px;
-  border-bottom-right-radius: 10px;
+  width: 100%;
+  height: 10vh;
+  background-color: gainsboro;
 }
 .btn-custom {
-  width: 151.5px;
-  height: 85px;
-  border: 3px solid #ffaf00;
+  width: 25%;
+  height: 10vh;
+  border: 3px solid #f5bb65;
+  background-color: white;
   border-radius: 10px;
-  font-size: 30px;
-  margin-right: 5px;
+  font-size: 150%;
 }
 </style>

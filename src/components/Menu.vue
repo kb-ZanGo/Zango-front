@@ -1,6 +1,6 @@
 <template lang="">
   <div class="menu">
-    <button type="button" class="btn btn-custom">출첵</button>
+    <button type="button" class="btn btn-custom" @click="choolCheck">출첵</button>
     <button type="button" class="btn btn-custom">룰렛</button>
     <button type="button" class="btn btn-custom">퀴즈</button>
     <button type="button" class="btn btn-custom" @click="zzanda">짠다</button>
@@ -12,6 +12,10 @@ const router = useRouter();
 
 const zzanda = () => {
   router.push({ name: 'zzanda' });
+};
+
+const choolCheck = () => {
+  router.push({ name: 'choolCheck' });
 };
 </script>
 <style>

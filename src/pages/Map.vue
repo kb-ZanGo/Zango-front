@@ -4,10 +4,12 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
+import { useMapStore } from '@/stores/Map';
 import Menu from '@/components/Menu.vue';
+const mapStore = useMapStore();
 
-onMounted(() => {
+onMounted(async () => {
   // 네이버 지도 API 로드
   const script = document.createElement('script');
   script.src =
@@ -16,22 +18,24 @@ onMounted(() => {
   script.defer = true;
   document.head.appendChild(script);
 
-  script.onload = () => {
+  script.onload = async () => {
     // 네이버 지도 생성
-    new window.naver.maps.Map('map', {
-      center: new window.naver.maps.LatLng(37.5670135, 126.978374),
-      zoom: 12,
+    const map = new window.naver.maps.Map('map', {
+      center: new window.naver.maps.LatLng(
+        37.519307558425844,
+        126.92728444212815
+      ),
+      zoom: 18,
     });
+    // store정보 api 비동기처리
+    await mapStore.getApi();
+    mapStore.loadMarkers(map);
   };
 });
 </script>
 <style>
 #map {
-  width: 618px;
-  height: 720px;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
-  border-bottom-left-radius: 3px;
-  border-bottom-right-radius: 3px;
+  width: 100%;
+  height: 90vh;
 }
 </style>

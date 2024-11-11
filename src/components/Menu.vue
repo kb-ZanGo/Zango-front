@@ -1,6 +1,8 @@
 <template lang="">
   <div class="menu">
-    <button type="button" class="btn btn-custom" @click="choolCheck">출첵</button>
+    <button type="button" class="btn btn-custom" @click="choolCheck">
+      출첵
+    </button>
     <button type="button" class="btn btn-custom">룰렛</button>
     <button type="button" class="btn btn-custom">퀴즈</button>
     <button type="button" class="btn btn-custom" @click="zzanda">짠다</button>
@@ -27,9 +29,9 @@ const choolCheck = () => {
 .btn-custom {
   width: 25%;
   height: 10vh;
-  border: 3px solid #f5bb65;
   background-color: white;
-  border-radius: 10px;
+  border: none;
   font-size: 150%;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
 }
 </style>

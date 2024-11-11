@@ -1,13 +1,21 @@
 <template>
   <div id="map"></div>
   <Menu />
+  <StoreInfo
+    v-if="showModal"
+    :location="selectedLocation"
+    @close="closeModal"
+  />
 </template>
 
 <script setup>
 import { onMounted, ref } from 'vue';
 import { useMapStore } from '@/stores/Map';
 import Menu from '@/components/Menu.vue';
+import StoreInfo from '@/components/StoreInfo.vue';
 const mapStore = useMapStore();
+const showModal = ref(false);
+const selectedLocation = ref(null); // 선택된 마커 정보
 
 onMounted(async () => {
   // 네이버 지도 API 로드
@@ -29,9 +37,20 @@ onMounted(async () => {
     });
     // store정보 api 비동기처리
     await mapStore.getApi();
-    mapStore.loadMarkers(map);
+    mapStore.loadMarkers(map, showLocationInfo);
   };
 });
+
+// 마커 클릭 시 모달에 정보 표시
+const showLocationInfo = (location) => {
+  selectedLocation.value = location;
+  showModal.value = true;
+};
+
+// 모달 닫기
+const closeModal = () => {
+  showModal.value = false;
+};
 </script>
 <style>
 #map {

@@ -23,8 +23,9 @@ export const useMapStore = defineStore('map', {
       }
     },
     // 마커 생성
-    loadMarkers(map) {
+    loadMarkers(map, showLocationInfo) {
       for (let i = 0; i < this.apiData.length; i++) {
+        const location = this.apiData[i];
         const markerOptions = {
           position: new naver.maps.LatLng(this.apiData[i].y, this.apiData[i].x),
           map: map,
@@ -35,7 +36,12 @@ export const useMapStore = defineStore('map', {
             anchor: new naver.maps.Point(34, 70),
           },
         };
-        new window.naver.maps.Marker(markerOptions);
+        const marker = new window.naver.maps.Marker(markerOptions);
+
+        // 클릭 이벤트
+        new window.naver.maps.Event.addListener(marker, 'click', () => {
+          showLocationInfo(location);
+        });
       }
     },
   },

@@ -1,17 +1,13 @@
 <template>
   <div id="map"></div>
   <Menu />
-  <StoreInfo
-    v-if="showModal"
-    :location="selectedLocation"
-    @close="closeModal"
-  />
+  <StoreInfo v-if="showModal" :location="selectedLocation" @close="closeModal" />
 </template>
 
 <script setup>
 import { onMounted, onBeforeUnmount, ref, watch } from 'vue';
-import { useMapStore } from '@/stores/Map';
-import { useGpsStore } from '@/stores/Gps';
+import { useMapStore } from '@/stores/map';
+import { useGpsStore } from '@/stores/gps';
 import Menu from '@/components/Menu.vue';
 import StoreInfo from '@/components/StoreInfo.vue';
 const mapStore = useMapStore();

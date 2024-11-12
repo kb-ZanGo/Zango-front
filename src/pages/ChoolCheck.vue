@@ -1,193 +1,280 @@
 <script setup>
-import { ref, onMounted } from 'vue';
-import FullCalendar from '@fullcalendar/vue3';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import interactionPlugin from '@fullcalendar/interaction'; // 날짜 클릭을 위해 필요
+import { ref, computed } from 'vue';
 
-const calendarOptions = ref({
-  plugins: [dayGridPlugin, interactionPlugin],
-  initialView: 'dayGridMonth',
-  events: [
-    // 출석 기록을 여기에 표시
-    { title: '출석완료', date: '2024-03-20', color: '#4CAF50' },
-  ],
-  headerToolbar: {
-    left: 'prev,next today',
-    center: 'title',
-    right: '',
-  },
-  // 날짜 셀 렌더링 커스텀
-  dayCellDidMount: function (arg) {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+// 현재 달의 날짜를 계산하는 함수
+const getDaysInMonth = (year, month) => {
+  const days = [];
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  for (let i = 1; i <= daysInMonth; i++) {
+    days.push(new Date(year, month, i));
+  }
+  return days;
+};
 
-    // 과거 날짜 비활성화
-    if (arg.date < today) {
-      arg.el.classList.add('past-date');
-      return;
-    }
+// 현재 날짜를 기준으로 날짜 배열 생성
+const currentDate = ref(new Date());
+const attendancePoints = ref({}); // 출석 포인트 저장용 객체
 
-    // 오늘 날짜에만 버튼 추가
-    if (arg.date.getTime() === today.getTime()) {
-      const buttonContainer = document.createElement('div');
-      buttonContainer.className = 'button-container';
-
-      const buttonEl = document.createElement('button');
-      buttonEl.innerHTML = '출석체크';
-      buttonEl.className = 'attendance-button';
-
-      // 이미 출석했는지 확인
-      const isAlreadyChecked = calendarOptions.value.events.some(
-        (event) => event.date === arg.dateStr
-      );
-
-      if (isAlreadyChecked) {
-        buttonEl.innerHTML = '출석완료';
-        buttonEl.disabled = true;
-        buttonEl.className = 'attendance-button checked';
-      } else {
-        buttonEl.onclick = () => handleAttendanceCheck(arg.dateStr);
-      }
-
-      buttonContainer.appendChild(buttonEl);
-      arg.el.querySelector('.fc-daygrid-day-frame').appendChild(buttonContainer);
-    }
-  },
+// 날짜별 상태 계산
+const calendarDays = computed(() => {
+  const days = getDaysInMonth(currentDate.value.getFullYear(), currentDate.value.getMonth());
+  return days.map((day) => ({
+    date: day,
+    isPast: day < new Date(new Date().setHours(0, 0, 0, 0)),
+    isToday: day.toDateString() === new Date().toDateString(),
+    points: attendancePoints.value[day.toDateString()] || 0,
+  }));
 });
 
-// 포인트 가중치 설정 함수
-function getWeightedRandomPoint() {
-  // 1~30 포인트에 대한 가중치 배열 생성
-  const weights = Array.from({ length: 30 }, (_, i) => {
-    // 지수 함수를 사용하여 높은 포인트일수록 가중치가 급격히 감소
-    return Math.exp(-0.2 * i);
-  });
-
-  // 가중치의 총합 계산
-  const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
-
-  // 0~1 사이의 랜덤 값 생성
-  let random = Math.random() * totalWeight;
-
-  // 가중치에 따라 포인트 선택
-  for (let i = 0; i < weights.length; i++) {
-    random -= weights[i];
-    if (random <= 0) {
-      return i + 1; // 1~30 포인트 반환
-    }
+// 출석체크 함수
+const checkAttendance = (day) => {
+  if (day.isToday && !attendancePoints.value[day.date.toDateString()]) {
+    const points = Math.floor(Math.random() * 30) + 1; // 1-30 포인트 랜덤 지급
+    attendancePoints.value[day.date.toDateString()] = points;
+    alert(`${points}포인트가 지급되었습니다!`);
   }
-
-  return 1; // 기본값
-}
-
-// 출석체크 처리 함수 수정
-async function handleAttendanceCheck(dateStr) {
-  const earnedPoints = getWeightedRandomPoint();
-
-  calendarOptions.value.events = [
-    ...calendarOptions.value.events,
-    {
-      title: `출석완료 (+${earnedPoints}P)`,
-      date: dateStr,
-      color: '#4CAF50',
-    },
-  ];
-
-  const button = document.querySelector('.attendance-button');
-  if (button) {
-    button.disabled = true;
-    button.className = 'attendance-button checked';
-    button.innerHTML = `출석완료 (+${earnedPoints}P)`;
-  }
-
-  alert(`출석체크 완료! ${earnedPoints}포인트가 지급되었습니다!`);
-
-  // 여기에 서버로 출석 데이터와 포인트를 전송하는 API 호출을 추가
-  // try {
-  //   await saveAttendanceAndPoints(dateStr, earnedPoints);
-  // } catch (error) {
-  //   console.error('포인트 지급 중 오류 발생:', error);
-  //   alert('포인트 지급 중 오류가 발생했습니다. 관리자에게 문의해주세요.');
-  // }
-}
+};
 </script>
 
 <template>
-  <div class="calendar-container">
-    <FullCalendar :options="calendarOptions" />
+  <div class="top">
+    <div class="top-container">
+      <div class="text">
+        <div class="sub-title">매일 매일 랜덤 스타포인트!</div>
+        <div class="title">10/20/30번째엔 최대 5,000P</div>
+        <div class="sub-title">2024.11.01 ~ 2024.11.30</div>
+      </div>
+      <div class="image">
+        <img src="@/assets/icons/pigpig.png" class="pig" />
+      </div>
+      <div class="points">
+        <div class="count">
+          <span class="mini-title">용돈 받은 횟수</span>
+          <span class="mini-content">1/30</span>
+        </div>
+        <div class="got-points">
+          <span class="mini-title">내가 받은 스타포인트</span>
+          <span class="mini-content">10P</span>
+        </div>
+        <hr />
+        <div class="my-points">
+          <span class="mini-title">보유중인 스타포인트</span>
+          <span class="mini-content">10P</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="bottom">
+    <div class="container">
+      <div class="calendar">
+        <div v-for="day in calendarDays" :key="day.date" class="cell-wrapper">
+          <span :class="['date-number', { 'today-label': day.isToday }]">
+            {{ day.isToday ? 'TODAY' : day.date.getDate() + '일' }}
+          </span>
+          <div
+            :class="[
+              'cell',
+              {
+                past: day.isPast,
+                today: day.isToday,
+                checked: day.points > 0,
+              },
+            ]"
+          >
+            <img
+              v-if="day.isToday && !day.points"
+              src="@/assets/icons/point.png"
+              @click="checkAttendance(day)"
+              class="check-img"
+              alt="출석체크"
+            />
+            <div v-if="day.points" class="stamp-container">
+              <img src="@/assets/icons/stamp.png" class="stamp-img" alt="출석완료" />
+              <span class="stamp-points"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <style scoped>
-.calendar-container {
-  width: 50%;
-  height: 70%;
-  padding: 20px;
+.top {
+  position: relative;
+  display: flex;
+  align-items: center;
 }
 
-/* 달력 셀 크기 고정 */
-:deep(.fc-daygrid-day) {
-  height: 80px !important; /* 원하는 높이로 조절 가능 */
+.top-container {
+  width: 100%;
+  max-width: 400px;
+  height: 500px;
+  padding: 50px 10px 10px 10px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 30px;
+  background-color: #f5f2ee;
 }
 
-:deep(.fc-daygrid-day-frame) {
-  height: 100%;
-  min-height: unset !important;
+.container {
+  width: 100%;
+  max-width: 400px;
+  padding: 10px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-:deep(.fc-daygrid-day-events) {
-  min-height: unset !important;
+.pig {
+  width: 65%;
+  display: block;
+  margin: 0 auto;
 }
 
-:deep(.fc-daygrid-body) {
-  width: 100% !important;
+.points {
+  width: 80%;
+  border-radius: 10px;
+  background-color: #ffffff;
+  margin: 0 auto;
+  padding-top: 15px;
+  padding-bottom: 10px;
 }
 
-:deep(.fc-daygrid-body table) {
-  width: 100% !important;
+.text {
+  width: 80%;
+  text-align: center;
+  margin-bottom: 15px;
 }
 
-/* :deep(.fc-scrollgrid-sync-table) {
-  width: 100% !important;
+.image {
+  width: 80%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+}
+
+.count,
+.got-points,
+.my-points {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 20px 5px 20px;
+}
+
+.mini-title {
+  text-align: left;
+}
+
+.mini-content {
+  text-align: right;
+}
+
+.calendar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+  gap: 15px 10px;
+  width: 100%;
+}
+
+.cell-wrapper {
+  position: relative;
+  padding-top: 20px; /* 날짜 숫자를 위한 공간 */
+}
+
+.date-number {
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.9em;
+  color: #333;
+  padding: 2px;
+  border-radius: 12px;
+}
+
+.today-label {
+  background-color: #f5bb65;
+  color: white;
+  font-weight: bold;
+  font-size: 0.8em;
+  padding: 3px 8px 1px 8px;
+}
+
+.cell {
+  width: 100%;
+  aspect-ratio: 1;
+  border: 1px solid #ddd;
+  border-radius: 50%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #ffffff;
+}
+
+.past {
+  background-color: #e0e0e0;
+  color: #666;
+}
+
+/* .today {
+  border-color: #4caf50;
+  background-color: #f0f7f0;
 } */
 
-/* 기존 스타일 유지 */
-:deep(.disabled-date) {
-  background-color: #f5f5f5;
-  cursor: not-allowed;
-}
-
-:deep(.button-container) {
-  padding: 4px;
-  margin-top: 4px;
-}
-
-:deep(.attendance-button) {
-  width: 100%;
-  padding: 4px 8px;
-  background-color: #4caf50;
-  color: white;
+.checked {
+  background-color: #e8f5e9;
   border: none;
-  border-radius: 4px;
+}
+
+.check-img {
+  width: 50%; /* 이미지 크기는 cell의 40%로 설정 */
+  height: auto;
   cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.check-img:hover {
+  transform: scale(1.1); /* 호버 시 약간 확대 효과 */
+}
+
+.stamp-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stamp-img {
+  width: 99%;
+  height: 99%;
+}
+
+.stamp-points {
+  position: absolute;
+  bottom: -2px;
   font-size: 0.8em;
+  color: #4caf50;
+  font-weight: bold;
 }
 
-:deep(.attendance-button:hover) {
-  background-color: #45a049;
+.sub-title {
+  text-align: center;
 }
 
-:deep(.attendance-button.checked) {
-  background-color: #cccccc;
-  cursor: not-allowed;
-}
-
-:deep(.past-date) {
-  background-color: #f5f5f5;
-  opacity: 0.7;
-}
-
-:deep(.past-date .fc-daygrid-day-number) {
-  color: #999;
+.title {
+  text-align: center;
+  font-size: 1.15em;
+  font-weight: bold;
+  margin-bottom: 20px;
+  margin-top: 20px;
 }
 </style>

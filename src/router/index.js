@@ -3,7 +3,7 @@ import Map from '../pages/Map.vue';
 import Zzanda from '../pages/Zzanda.vue';
 import ChoolCheck from '../pages/ChoolCheck.vue';
 import QuizRegister from '@/pages/QuizRegister.vue';
-import Quiz from '@/pages/Quiz.vue';
+import QuizGroup from '@/pages/QuizGroup.vue';
 import FeedBack from '@/pages/side/FeedBack.vue';
 import GroupBuy from '@/pages/side/GroupBuy.vue';
 import HoneyTip from '@/pages/side/HoneyTip.vue';
@@ -34,7 +34,7 @@ const router = createRouter({
     {
       path: '/quiz',
       name: 'quiz',
-      component: Quiz,
+      component: QuizGroup,
     },
     {
       path: '/honeytip',

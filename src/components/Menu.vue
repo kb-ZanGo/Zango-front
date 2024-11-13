@@ -1,12 +1,18 @@
 <template lang="">
   <div class="menu">
-    <button type="button" class="btn btn-custom" @click="choolCheck">
-      출첵
+    <button type="button" class="btn btn-custom" @click="choolCheck">출첵</button>
+    <button type="button" class="btn btn-custom" @click="roulette">룰렛</button>
+    <button
+      type="button"
+      class="btn btn-custom"
+      @click="
+        () => {
+          router.push({ name: 'quiz' });
+        }
+      "
+    >
+      퀴즈
     </button>
-    <button type="button" class="btn btn-custom">룰렛</button>
-    <button type="button" class="btn btn-custom" @click="() => {
-      router.push({ name: 'quiz' })
-    }">퀴즈</button>
     <button type="button" class="btn btn-custom" @click="zzanda">짠다</button>
   </div>
 </template>
@@ -20,6 +26,10 @@ const zzanda = () => {
 
 const choolCheck = () => {
   router.push({ name: 'choolCheck' });
+};
+
+const roulette = () => {
+  router.push({ name: 'roulette' });
 };
 </script>
 <style>

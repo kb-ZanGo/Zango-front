@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import Map from '../pages/Map.vue';
 import Zzanda from '../pages/Zzanda.vue';
 import ChoolCheck from '../pages/ChoolCheck.vue';
+import Roulette from '../pages/Roulette.vue';
 import QuizRegister from '@/pages/QuizRegister.vue';
 import QuizGroup from '@/pages/QuizGroup.vue';
 import FeedBack from '@/pages/side/FeedBack.vue';
@@ -25,6 +26,11 @@ const router = createRouter({
       path: '/choolCheck',
       name: 'choolCheck',
       component: ChoolCheck,
+    },
+    {
+      path: '/roulette',
+      name: 'roulette',
+      component: Roulette,
     },
     {
       path: '/quiz/regi',

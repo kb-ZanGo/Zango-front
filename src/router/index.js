@@ -31,6 +31,8 @@ const router = createRouter({
       path: '/roulette',
       name: 'roulette',
       component: Roulette,
+    },
+    {
       path: '/quiz/regi',
       name: 'quizRegi',
       component: QuizRegister,

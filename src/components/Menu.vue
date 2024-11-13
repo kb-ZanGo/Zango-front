@@ -1,7 +1,7 @@
 <template lang="">
   <div class="menu">
     <button type="button" class="btn btn-custom" @click="choolCheck">출첵</button>
-    <button type="button" class="btn btn-custom">룰렛</button>
+    <button type="button" class="btn btn-custom" @click="roulette">룰렛</button>
     <button
       type="button"
       class="btn btn-custom"

@@ -29,6 +29,7 @@ const close = () => {
   background-color: white;
   padding: 20px;
   width: 100%;
+  height: 30%;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   position: fixed;
   bottom: 0;

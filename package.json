@@ -17,9 +17,8 @@
     "bootstrap": "^5.3.3",
     "pinia": "^2.2.6",
     "vue": "^3.4.21",
-    "vue-router": "^4.3.0",
-    "vue3-naver-maps": "^4.2.0",
-    "vue3-roulette": "^0.3.3"
+    "vue-router": "^4.4.5",
+    "vue3-naver-maps": "^4.2.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.4",

@@ -22,8 +22,8 @@ export const useMapStore = defineStore('map', {
         this.apiData = []; // aptData 초기화
       }
     },
-    // 마커 생성
-    loadMarkers(map, showLocationInfo) {
+    // 지점 마커 생성
+    loadStoreMarkers(map, showLocationInfo) {
       for (let i = 0; i < this.apiData.length; i++) {
         const location = this.apiData[i];
         const markerOptions = {

@@ -1,7 +1,6 @@
 <template>
     <div v-if="data.length == 0">퀴즈가 없는데용?</div>
     <div v-else class="quiz-container">
-
         <div class="image-container">
             <img v-if="currentQuiz.imageUrl" :src="currentQuiz.imageUrl">
         </div>
@@ -54,7 +53,7 @@
                 :class="['indicator', { active: currentIndex === index }]"></div>
         </div>
 
-        <button class="participate-button ">참여하기</button>
+        <button class="participate-button" @click="goToQuiz">참여하기</button>
 
     </div>
 
@@ -63,6 +62,9 @@
 <script setup>
 import axios from 'axios';
 import { ref, onMounted, computed } from 'vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const data = ref([]);
 const currentIndex = ref(0);
@@ -88,6 +90,11 @@ onMounted(async () => {
 const currentQuiz = computed(() => {
     return data.value[currentIndex.value] || {};
 });
+
+const goToQuiz = () => {
+    // 원하는 경로로 이동
+    router.push(`/quiz/${currentQuiz.value.id}`);
+};
 </script>
 
 <style scoped>

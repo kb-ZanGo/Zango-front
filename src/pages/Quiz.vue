@@ -25,6 +25,8 @@
 import axios from 'axios';
 import { ref, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { useResult } from '@/stores/quizResult';
+const { resetResult, addResultItem } = useResult();
 
 const route = useRoute();
 const router = useRouter();
@@ -76,8 +78,11 @@ const showResults = async () => {
         groupId: quizGroupId,
         answer: selectedAnswers.value
     })
-    console.log(result);
-    router.push('/'); // 홈 화면으로 이동
+    resetResult()
+    addResultItem(result)
+    router.push({
+        name: 'QuizResult',
+    }); // 홈 화면으로 이동
 };
 
 onMounted(fetchQuizzes);

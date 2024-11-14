@@ -8,6 +8,7 @@ import QuizGroup from '@/pages/QuizGroup.vue';
 import FeedBack from '@/pages/side/FeedBack.vue';
 import GroupBuy from '@/pages/side/GroupBuy.vue';
 import HoneyTip from '@/pages/side/HoneyTip.vue';
+import Quiz from '@/pages/Quiz.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -56,6 +57,11 @@ const router = createRouter({
       path: '/feedback',
       name: 'FeedBack',
       component: FeedBack,
+    },
+    {
+      path: '/quiz/:quizGroupId',
+      name: 'Quiz',
+      component: Quiz,
     },
   ],
 });

@@ -10,8 +10,6 @@
   </div>
 </template>
 <script setup>
-import { defineProps, defineEmits } from 'vue';
-
 // 부모로부터 위치 정보를 props로 받음
 const props = defineProps({
   location: Object,

@@ -1,7 +1,11 @@
 <template>
   <div id="map"></div>
   <Menu />
-  <StoreInfo v-if="showModal" :location="selectedLocation" @close="closeModal" />
+  <StoreInfo
+    v-if="showModal"
+    :location="selectedLocation"
+    @close="closeModal"
+  />
 </template>
 
 <script setup>
@@ -10,6 +14,7 @@ import { useMapStore } from '@/stores/map';
 import { useGpsStore } from '@/stores/gps';
 import Menu from '@/components/Menu.vue';
 import StoreInfo from '@/components/StoreInfo.vue';
+
 const mapStore = useMapStore();
 const gpsStore = useGpsStore();
 const showModal = ref(false);
@@ -49,8 +54,18 @@ onMounted(async () => {
         } else {
           userMarker.value.setPosition(userLatLng);
         }
+        // 고정 마커와 실시간 마커 거리 비교 및 아이콘 변경
+        mapStore.updateStoreMarkersIcon(lat, lng, map.value);
       }
     });
+    // //테스트용 클릭 이벤트
+    // new naver.maps.Event.addListener(map.value, 'click', function (e) {
+    //   userMarker.value.setPosition(e.coord);
+    //   gpsStore.latitude = e.coord.lat();
+    //   gpsStore.longitude = e.coord.lng();
+    //   console.log(e.coord);
+    // });
+
     // store정보 api 비동기처리
     await mapStore.getApi();
     mapStore.loadStoreMarkers(map.value, showLocationInfo);

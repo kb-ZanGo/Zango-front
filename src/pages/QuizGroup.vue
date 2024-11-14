@@ -2,8 +2,8 @@
     <div v-if="data.length == 0">퀴즈가 없는데용?</div>
     <div v-else class="quiz-container">
 
-        <div>
-            <img v-if="currentQuiz.imageUrl" :src="currentQuiz.imageUrl" class="responsive-img">
+        <div class="image-container">
+            <img v-if="currentQuiz.imageUrl" :src="currentQuiz.imageUrl">
         </div>
 
         <div class="quiz-header">
@@ -99,11 +99,6 @@ const currentQuiz = computed(() => {
     max-width: 400px;
     height: 100vh;
     margin: auto;
-}
-
-.responsive-img {
-    width: 100%;
-    height: 40%;
 }
 
 .quiz-header {
@@ -261,5 +256,19 @@ const currentQuiz = computed(() => {
 .indicator.active {
     background-color: #f8c471;
     /* 활성화된 인디케이터 색상 */
+}
+
+.image-container {
+    width: 100%;
+    height: 25%;
+    /* 원하는 높이 지정 */
+    position: relative;
+}
+
+.image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* 비율 유지하며 div에 꽉 차게 */
 }
 </style>

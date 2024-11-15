@@ -4,19 +4,28 @@ import axios from 'axios';
 
 export const useMapStore = defineStore('map', {
   state: () => ({
-    apiData: ref(''),
-    storeMarkers: ref([]), // 고정 마커들을 저장
+    apiData: '',
+    storeMarkers: ref([]),
+    lat: 37.548138,
+    lon: 127.073397,
+    radius: 5,
   }),
   actions: {
+    setLat(lat) {
+      this.lat = lat;
+    },
+    setLon(lon) {
+      this.lon = lon;
+    },
     // store 정보 api 불러오기
     async getApi() {
-      const url = '/api/map';
+      const url = `http://localhost:5173/api/v2/map?lat=${this.lat}&lon=${this.lon}&radius=${this.radius}`;
       try {
         const response = await axios.get(url);
         if (response.status === 200 && response.data.data.length > 0) {
           this.apiData = response.data.data; // 데이터를 상태에 저장
         } else {
-          console.log('else  ' + JSON.stringify(response.data.data));
+          // console.log('else  ' + JSON.stringify(response.data.data));
         }
       } catch (error) {
         console.error('데이터를 가져오는 중 에러 발생:', error);
@@ -25,23 +34,49 @@ export const useMapStore = defineStore('map', {
     },
     // 지점 마커 생성
     loadStoreMarkers(map, showLocationInfo) {
-      this.storeMarkers = this.apiData.map((location) => {
-        const markerOptions = {
-          position: new naver.maps.LatLng(location.y, location.x),
-          map: map,
-          icon: {
-            url: '/images/storeMarker1.png',
-            scaledSize: new naver.maps.Size(65, 65),
-            origin: new naver.maps.Point(0, 0),
-            anchor: new naver.maps.Point(34, 70),
-          },
-        };
-        const marker = new naver.maps.Marker(markerOptions);
-        new window.naver.maps.Event.addListener(marker, 'click', () => {
-          showLocationInfo(location);
-        });
-        return marker;
+      const bounds = map.getBounds(); // 현재 지도 범위 가져오기
+
+      // 범위 밖 마커 삭제
+      this.storeMarkers.forEach((marker, index) => {
+        const markerPosition = marker.getPosition();
+        if (!bounds.hasLatLng(markerPosition)) {
+          marker.setMap(null); // 범위 밖의 마커는 지도에서 제거
+          this.storeMarkers.splice(index, 1); // 배열에서도 제거
+        }
       });
+      // 현재 범위에 없는 새로운 마커만 추가
+      for (let i = 0; i < this.apiData.length; i++) {
+        const location = this.apiData[i];
+        const markerPosition = new naver.maps.LatLng(location.y, location.x);
+
+        // 범위 내 마커만 추가
+        if (bounds.hasLatLng(markerPosition)) {
+          // 기존 마커가 이미 있으면 추가하지 않음
+          const existingMarker = this.storeMarkers.find((marker) =>
+            marker.getPosition().equals(markerPosition)
+          );
+          if (!existingMarker) {
+            const markerOptions = {
+              position: markerPosition,
+              map: map,
+              icon: {
+                url: '/images/storeMarker1.png',
+                scaledSize: new naver.maps.Size(65, 65),
+                origin: new naver.maps.Point(0, 0),
+                anchor: new naver.maps.Point(34, 70),
+              },
+            };
+            const marker = new naver.maps.Marker(markerOptions);
+
+            // 마커 클릭 이벤트
+            new naver.maps.Event.addListener(marker, 'click', () => {
+              showLocationInfo(location);
+            });
+            // 새로운 마커는 배열에 추가
+            this.storeMarkers.push(marker);
+          }
+        }
+      }
     },
     // 두 좌표 간 거리 계산 (Haversine 공식)
     getDistance(lat1, lon1, lat2, lon2) {
@@ -58,25 +93,22 @@ export const useMapStore = defineStore('map', {
 
       return R * c; // 거리 반환 (미터)
     },
-    // 실시간 마커와 고정 마커의 거리 비교
+    // 거리 계산
     updateStoreMarkersIcon(currentLat, currentLng, map) {
-      const currentBounds = map.getBounds(); // 현재 화면에 보이는 영역의 경계
       this.storeMarkers.forEach((marker, index) => {
         const markerPosition = marker.getPosition();
-        if (currentBounds.hasLatLng(markerPosition)) {
-          const distance = this.getDistance(
-            currentLat,
-            currentLng,
-            markerPosition.lat(),
-            markerPosition.lng()
-          );
+        const distance = this.getDistance(
+          currentLat,
+          currentLng,
+          markerPosition.lat(),
+          markerPosition.lng()
+        );
 
-          if (distance < 100) {
-            // 반경 m단위
-            marker.setAnimation(naver.maps.Animation.BOUNCE);
-          } else {
-            marker.setAnimation(null);
-          }
+        if (distance < 100) {
+          // 반경 100m 내일 때 애니메이션 추가
+          marker.setAnimation(naver.maps.Animation.BOUNCE);
+        } else {
+          marker.setAnimation(null);
         }
       });
     },

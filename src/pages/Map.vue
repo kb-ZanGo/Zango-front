@@ -19,8 +19,8 @@ const mapStore = useMapStore();
 const gpsStore = useGpsStore();
 const showModal = ref(false);
 const selectedLocation = ref(null); // 선택된 마커 정보
-let map = ref();
-let userMarker = ref();
+const map = ref();
+const userMarker = ref();
 
 onMounted(async () => {
   gpsStore.startWatchingLocation();
@@ -36,7 +36,8 @@ onMounted(async () => {
     // 네이버 지도 생성
     map.value = new naver.maps.Map('map', {
       center: new naver.maps.LatLng(37.5665, 126.978),
-      zoom: 18,
+      zoom: 19,
+      minZoom: 15, // 최소 줌 레벨
     });
     // gps가 업데이트될 때마다 지도와 마커 위치를 업데이트
     watch([() => gpsStore.latitude, () => gpsStore.longitude], ([lat, lng]) => {
@@ -58,17 +59,22 @@ onMounted(async () => {
         mapStore.updateStoreMarkersIcon(lat, lng, map.value);
       }
     });
-    // //테스트용 클릭 이벤트
-    // new naver.maps.Event.addListener(map.value, 'click', function (e) {
-    //   userMarker.value.setPosition(e.coord);
-    //   gpsStore.latitude = e.coord.lat();
-    //   gpsStore.longitude = e.coord.lng();
-    //   console.log(e.coord);
-    // });
+    //===================================================================
+    //테스트용 클릭 이벤트
+    new naver.maps.Event.addListener(map.value, 'click', function (e) {
+      userMarker.value.setPosition(e.coord);
+      gpsStore.latitude = e.coord.lat();
+      gpsStore.longitude = e.coord.lng();
+    });
+    //===================================================================
 
-    // store정보 api 비동기처리
-    await mapStore.getApi();
-    mapStore.loadStoreMarkers(map.value, showLocationInfo);
+    naver.maps.Event.addListener(map.value, 'idle', () => {
+      const center = map.value.getCenter();
+      mapStore.setLat(center.lat());
+      mapStore.setLon(center.lng());
+      mapStore.getApi();
+      mapStore.loadStoreMarkers(map.value, showLocationInfo); // 첫 화면 마커 로드
+    });
   };
 });
 

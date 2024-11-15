@@ -1,8 +1,60 @@
 <template>
-  <div v-if="data.length == 0">퀴즈가 없는데용?</div>
-  <div v-else class="quiz-container">
-    <div class="image-container">
-      <img v-if="currentQuiz.imageUrl" :src="currentQuiz.imageUrl" />
+    <div v-if="data.length == 0">퀴즈가 없는데용?</div>
+    <div v-else class="quiz-container">
+        <div class="image-container">
+            <img v-if="currentQuiz.imageUrl" :src="currentQuiz.imageUrl">
+        </div>
+
+        <div class="quiz-header">
+            <button class="quiz-tag">정답/오답</button>
+            <h2>{{ currentQuiz.title }}</h2>
+            <p class="quiz-description">{{ currentQuiz.description }}</p>
+        </div>
+
+        <div class="quiz-header-divider"></div> <!-- 회색 선 추가 -->
+
+        <div class="center">
+            <div class="move-button" @click="prevQuiz">
+                <i v-if="currentIndex > 0" class="fa-solid fa-angle-left"></i>
+            </div>
+            <div class="quiz-reward">
+
+                <div class="reward-item">
+                    <div>
+                        <i class="fa-solid fa-gift icon"></i>
+                        <span class="title">퀴즈 보상</span>
+                    </div>
+                </div>
+                <div class="reward-box">
+                    <span class="title">KB포인트</span>
+                    <span class="points"> <img style="width:30px;" src="@/assets/icons/point.png"> {{ currentQuiz.reward
+                        }}</span>
+                </div>
+                <div class="reward-item">
+                    <i class="fa-regular fa-calendar icon"></i>
+                    <span class="title">기간</span>
+                    <span class="date">{{ currentQuiz.endDate }} 까지</span>
+                </div>
+
+                <div class="reward-item">
+                    <i class="fa-solid fa-user-group icon"></i>
+                    <span class="title">참여자</span>
+                    <span class="participants">{{ currentQuiz.count }} 명</span>
+                </div>
+            </div>
+            <div class="move-button" @click="nextQuiz">
+                <i v-if="currentIndex < data.length - 1" class="fa-solid fa-angle-right"></i>
+            </div>
+        </div>
+
+        <!-- indicator -->
+        <div class="indicator-container">
+            <div v-for="(item, index) in data.length" :key="index"
+                :class="['indicator', { active: currentIndex === index }]"></div>
+        </div>
+
+        <button class="participate-button" @click="goToQuiz">참여하기</button>
+
     </div>
 
     <div class="quiz-header">
@@ -68,6 +120,9 @@
 <script setup>
 import axios from 'axios';
 import { ref, onMounted, computed } from 'vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const data = ref([]);
 const currentIndex = ref(0);
@@ -93,6 +148,11 @@ onMounted(async () => {
 const currentQuiz = computed(() => {
   return data.value[currentIndex.value] || {};
 });
+
+const goToQuiz = () => {
+    // 원하는 경로로 이동
+    router.push(`/quiz/${currentQuiz.value.id}`);
+};
 </script>
 
 <style scoped>

@@ -1,11 +1,15 @@
 <template>
   <div class="roulette-container" @click="closeResult">
-    <h1 class="title">바람개비가 되지 못한 행운의 룰렛</h1>
+    <div class="title-container">
+      <div class="title">점메추 루-렛 !!</div>
+      <div class="text">KB 스타뱅킹과 함께</div>
+      <div class="text">점심 메뉴를 골라보세요!</div>
+    </div>
 
     <div class="box-roulette">
       <div class="pin"></div>
       <button type="button" @click="spin" :disabled="isSpinning" class="spin-button">
-        <div class="inner-circle"></div>
+        <div class="inner-circle">START</div>
       </button>
 
       <div
@@ -32,7 +36,7 @@
 
       <div v-if="selectedItem && !isSpinning" class="result-overlay">
         <div class="result-content">
-          <h3>🎉 당첨! 🎉</h3>
+          <h4>🎉 축하합니다! 🎉</h4>
           <p>{{ selectedItem.text }}</p>
         </div>
       </div>
@@ -44,13 +48,12 @@
 import { ref, computed } from 'vue';
 
 const items = ref([
-  { text: '돈까스', color: '#FF4136' },
-  { text: '얼큰이칼국수', color: '#FF851B' },
-  { text: '짬뽕밥', color: '#FFDC00' },
-  { text: '햄버거', color: '#2ECC40' },
-  { text: '밥버거', color: '#0074D9' },
-  { text: '김치제육', color: '#B212F3' },
-  { text: '빨계떡', color: '#FFEE7C' },
+  { text: '돈까스', color: '#F2E7ED' },
+  { text: '햄버거', color: '#FFFBE7' },
+  { text: '부대찌개', color: '#FFF1B2' },
+  { text: '카레라이스', color: '#F2E7ED' },
+  { text: '멸치국수', color: '#FFFBE7' },
+  { text: '뚝배기불고기', color: '#FFF1B2' },
 ]);
 
 const currentRotation = ref(0);
@@ -107,42 +110,96 @@ function closeResult() {
 </script>
 
 <style scoped>
+.title-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
 .roulette-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 2rem;
+  background-color: #f5f2ee;
+  height: 90vh;
+  overflow-y: auto;
 }
 
 .title {
   font-size: 2rem;
-  margin-bottom: 2rem;
+  margin-bottom: 0.5rem;
+  color: #333;
+  font-weight: bold;
+}
+
+.text {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
   color: #333;
 }
 
 .box-roulette {
   position: relative;
-  width: 400px;
-  height: 400px;
-  border: 15px solid #ddd;
+  width: 85vw;
+  height: 85vw;
+  max-width: 400px;
+  max-height: 400px;
+  /* 안 테두리 */
+  border: 5px solid #ffffff;
   border-radius: 50%;
   background: #fff;
-  overflow: hidden;
   z-index: 1000;
+  /* 바깥 테두리*/
+  outline: 15px solid #f3b806b0;
+  /* outline: 15px solid #f3b706; */
+  outline-offset: 2px; /* 테두리 간격 조정 */
 }
 
 .pin {
   position: absolute;
-  top: -30px;
+  top: -17px;
   left: 50%;
   transform: translateX(-50%);
   width: 0;
   height: 0;
-  border-left: 25px solid transparent;
-  border-right: 25px solid transparent;
-  border-top: 40px solid #333;
-  z-index: 2;
+  border-left: 20px solid transparent;
+  border-right: 20px solid transparent;
+  border-top: 35px solid #955a1f;
+  border-radius: 45%;
+  z-index: 5;
   filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.3));
+}
+
+.pin::after {
+  content: '';
+  position: absolute;
+  top: -54px;
+  left: 0;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: #955a1f;
+  border-top: 36px solid #955a1f;
+  border-left: 18px solid transparent;
+  border-right: 18px solid transparent;
+  z-index: 3;
+}
+
+/* 흰색 점 추가 */
+.pin::before {
+  content: '';
+  position: absolute;
+  top: -36px; /* 상단 핀의 중앙에 위치하도록 조정 */
+  left: 0px; /* 좌우 중앙 */
+  width: 18px; /* 점 크기 */
+  height: 18px; /* 점 크기 */
+  background: white;
+  border-radius: 50%; /* 원형으로 만들기 */
+  transform: translate(-50%, -50%); /* 정확한 중앙 정렬 */
+  z-index: 4;
 }
 
 .spin-button {
@@ -160,25 +217,38 @@ function closeResult() {
   cursor: pointer;
   transition: all 0.3s ease;
   padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .inner-circle {
-  width: 50px;
-  height: 50px;
-  background: #ff4136;
+  width: 45px;
+  height: 45px;
+  background: #955a1f;
   border-radius: 50%;
-  margin: 5px;
   transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: bold;
+  font-size: 0.6rem;
 }
 
 .spin-button:hover .inner-circle {
-  transform: scale(0.9);
-  background: #ff6b63;
+  transform: scale(0.8);
+  background: #754718;
 }
 
 .spin-button:active .inner-circle {
   transform: scale(0.8);
-  background: #cc3329;
+  background: #955a1f;
+}
+
+.spin-button:disabled .inner-circle {
+  background: #955a1f;
+  color: #955a1f;
 }
 
 .roulette {
@@ -204,10 +274,9 @@ function closeResult() {
   left: 50%;
   top: 50%;
   transform-origin: center;
-  color: white;
+  color: black;
   font-weight: bold;
-  font-size: 1.1rem;
-  text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.5);
+  font-size: 1.2rem;
   z-index: 2;
   width: 80px;
   text-align: center;
@@ -222,10 +291,6 @@ function closeResult() {
   border-radius: 4px;
   height: auto;
   min-height: 2.4em;
-}
-
-.spin-button:disabled .inner-circle {
-  background: #ff0000;
 }
 
 .result-overlay {

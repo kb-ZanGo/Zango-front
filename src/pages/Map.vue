@@ -1,6 +1,6 @@
 <template>
   <div id="map"></div>
-  <Menu />
+  <!-- <Menu /> -->
   <StoreInfo
     v-if="showModal"
     :location="selectedLocation"

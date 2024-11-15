@@ -1,6 +1,6 @@
 <template>
   <div id="map"></div>
-  <Menu />
+  <!-- <Menu /> -->
   <StoreInfo v-if="showModal" :location="selectedLocation" @close="closeModal" />
 </template>
 
@@ -21,8 +21,7 @@ onMounted(async () => {
   gpsStore.startWatchingLocation();
   // 네이버 지도 API 로드
   const script = document.createElement('script');
-  script.src =
-    'https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=rethfjjakr';
+  script.src = 'https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=rethfjjakr';
   script.async = true;
   script.defer = true;
   document.head.appendChild(script);

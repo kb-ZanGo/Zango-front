@@ -66,8 +66,10 @@ export default {
 <style scoped>
 .container {
   width: 100%;
+  height: 90vh;
   max-width: 1200px;
   margin: 0 auto;
+  overflow: auto;
 }
 
 .diary {

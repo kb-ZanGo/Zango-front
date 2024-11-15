@@ -47,70 +47,72 @@ const checkAttendance = (day) => {
 </script>
 
 <template>
-  <div class="top">
-    <div class="top-container">
-      <div class="text">
-        <div class="sub-title">매일 매일 랜덤 스타포인트!</div>
-        <div class="title">10/20/30번째엔 최대 5,000P</div>
-        <div class="sub-title">2024.11.01 ~ 2024.11.30</div>
-      </div>
-      <div class="image">
-        <img src="@/assets/icons/pigpig.png" class="pig" />
-      </div>
-      <div class="points">
-        <div class="count">
-          <span class="mini-title">용돈 받은 횟수</span>
-          <span class="mini-content">1/30</span>
+  <div class="choolCheck-container">
+    <div class="top">
+      <div class="top-container">
+        <div class="text">
+          <div class="sub-title">매일 매일 랜덤 스타포인트!</div>
+          <div class="title">10/20/30번째엔 최대 5,000P</div>
+          <div class="sub-title">2024.11.01 ~ 2024.11.30</div>
         </div>
-        <div class="got-points">
-          <span class="mini-title">내가 받은 스타포인트</span>
-          <span class="mini-content">10P</span>
+        <div class="image">
+          <img src="@/assets/icons/pigpig.png" class="pig" />
         </div>
-        <hr />
-        <div class="my-points">
-          <span class="mini-title">보유중인 스타포인트</span>
-          <span class="mini-content">10P</span>
+        <div class="points">
+          <div class="count">
+            <span class="mini-title">용돈 받은 횟수</span>
+            <span class="mini-content">1/30</span>
+          </div>
+          <div class="got-points">
+            <span class="mini-title">내가 받은 스타포인트</span>
+            <span class="mini-content">10P</span>
+          </div>
+          <hr />
+          <div class="my-points">
+            <span class="mini-title">보유중인 스타포인트</span>
+            <span class="mini-content">10P</span>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-  <div class="hat">
-    <div class="diary-hat">
-      <div class="rings-container">
-        <div class="ring"></div>
-        <div class="ring"></div>
-        <div class="ring"></div>
-        <div class="ring"></div>
+    <div class="hat">
+      <div class="diary-hat">
+        <div class="rings-container">
+          <div class="ring"></div>
+          <div class="ring"></div>
+          <div class="ring"></div>
+          <div class="ring"></div>
+        </div>
       </div>
     </div>
-  </div>
-  <div class="bottom">
-    <div class="container">
-      <div class="calendar">
-        <div v-for="day in calendarDays" :key="day.date" class="cell-wrapper">
-          <span :class="['date-number', { 'today-label': day.isToday }]">
-            {{ day.isToday ? 'TODAY' : day.date.getDate() + '일' }}
-          </span>
-          <div
-            :class="[
-              'cell',
-              {
-                past: day.isPast,
-                today: day.isToday,
-                checked: day.points > 0,
-              },
-            ]"
-          >
-            <img
-              v-if="day.isToday && !day.points"
-              src="@/assets/icons/point.png"
-              @click="checkAttendance(day)"
-              class="check-img"
-              alt="출석체크"
-            />
-            <div v-if="day.points" class="stamp-container">
-              <img src="@/assets/icons/stamp.png" class="stamp-img" alt="출석완료" />
-              <span class="stamp-points"></span>
+    <div class="bottom">
+      <div class="container">
+        <div class="calendar">
+          <div v-for="day in calendarDays" :key="day.date" class="cell-wrapper">
+            <span :class="['date-number', { 'today-label': day.isToday }]">
+              {{ day.isToday ? 'TODAY' : day.date.getDate() + '일' }}
+            </span>
+            <div
+              :class="[
+                'cell',
+                {
+                  past: day.isPast,
+                  today: day.isToday,
+                  checked: day.points > 0,
+                },
+              ]"
+            >
+              <img
+                v-if="day.isToday && !day.points"
+                src="@/assets/icons/point.png"
+                @click="checkAttendance(day)"
+                class="check-img"
+                alt="출석체크"
+              />
+              <div v-if="day.points" class="stamp-container">
+                <img src="@/assets/icons/stamp.png" class="stamp-img" alt="출석완료" />
+                <span class="stamp-points"></span>
+              </div>
             </div>
           </div>
         </div>
@@ -120,6 +122,12 @@ const checkAttendance = (day) => {
 </template>
 
 <style scoped>
+.choolCheck-container {
+  width: 100%;
+  height: 90vh;
+  overflow-y: auto;
+}
+
 .top {
   position: relative;
   display: flex;

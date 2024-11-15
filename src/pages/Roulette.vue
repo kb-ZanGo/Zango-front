@@ -123,6 +123,8 @@ function closeResult() {
   align-items: center;
   padding: 2rem;
   background-color: #f5f2ee;
+  height: 90vh;
+  overflow-y: auto;
 }
 
 .title {

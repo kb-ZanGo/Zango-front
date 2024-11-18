@@ -23,7 +23,6 @@ const map = ref();
 const userMarker = ref();
 
 onMounted(async () => {
-  gpsStore.startWatchingLocation();
   // 네이버 지도 API 로드
   const script = document.createElement('script');
   script.src =
@@ -33,9 +32,10 @@ onMounted(async () => {
   document.head.appendChild(script);
 
   script.onload = async () => {
+    gpsStore.startWatchingLocation();
     // 네이버 지도 생성
     map.value = new naver.maps.Map('map', {
-      center: new naver.maps.LatLng(37.5665, 126.978),
+      center: new naver.maps.LatLng(gpsStore.latitude, gpsStore.longitude),
       zoom: 19,
       minZoom: 15, // 최소 줌 레벨
     });

@@ -19,7 +19,7 @@ export const useMapStore = defineStore('map', {
     },
     // store 정보 api 불러오기
     async getApi() {
-      const url = `http://localhost:5173/api/v2/map?lat=${this.lat}&lon=${this.lon}&radius=${this.radius}`;
+      const url = `/api/v2/map?lat=${this.lat}&lon=${this.lon}&radius=${this.radius}`;
       try {
         const response = await axios.get(url);
         if (response.status === 200 && response.data.data.length > 0) {
@@ -32,11 +32,8 @@ export const useMapStore = defineStore('map', {
         this.apiData = []; // aptData 초기화
       }
     },
-    // 지점 마커 생성
-    loadStoreMarkers(map, showLocationInfo) {
-      const bounds = map.getBounds(); // 현재 지도 범위 가져오기
-
-      // 범위 밖 마커 삭제
+    // 범위 밖 마커 삭제
+    removeOutOfBoundsMarkers(bounds) {
       this.storeMarkers.forEach((marker, index) => {
         const markerPosition = marker.getPosition();
         if (!bounds.hasLatLng(markerPosition)) {
@@ -44,6 +41,14 @@ export const useMapStore = defineStore('map', {
           this.storeMarkers.splice(index, 1); // 배열에서도 제거
         }
       });
+    },
+    // 지점 마커 생성
+    loadStoreMarkers(map, showLocationInfo) {
+      const bounds = map.getBounds(); // 현재 지도 범위 가져오기
+
+      // 범위 밖 마커 삭제 함수 호출
+      this.removeOutOfBoundsMarkers(bounds);
+
       // 현재 범위에 없는 새로운 마커만 추가
       for (let i = 0; i < this.apiData.length; i++) {
         const location = this.apiData[i];

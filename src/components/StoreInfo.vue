@@ -2,10 +2,12 @@
   <div class="modal-content">
     <span class="close-btn" @click="close">&times;</span>
     <div v-if="location">
-      <h2>{{ location.name }}</h2>
-      <p>주소: {{ location.addr }}</p>
-      <p>전화번호: {{ location.tel }}</p>
-      <p>영업시간: {{ location.startTime }} ~ {{ location.endTime }}</p>
+      <h2 class="head-color">{{ location.name }}</h2>
+      <p>
+        주소: {{ location.addr }} <br />전화번호: {{ telChange(location.tel) }}
+        <br />영업시간: {{ location.startTime.substring(0, 5) }} ~
+        {{ location.endTime.substring(0, 5) }}
+      </p>
     </div>
   </div>
 </template>
@@ -21,13 +23,17 @@ const emit = defineEmits(['close']);
 const close = () => {
   emit('close'); // 부모 컴포넌트에 close 이벤트 전달
 };
+
+function telChange(tel) {
+  return tel.replace(/\s+/g, '').replace(/\)/g, '-');
+}
 </script>
 <style>
 .modal-content {
   background-color: white;
   padding: 20px;
   width: 100%;
-  height: 30%;
+  height: 20%;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   position: fixed;
   bottom: 0;
@@ -43,5 +49,9 @@ const close = () => {
   right: 15px;
   cursor: pointer;
   font-size: 24px;
+}
+
+.head-color {
+  color: #0168c3;
 }
 </style>

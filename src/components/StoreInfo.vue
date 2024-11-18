@@ -8,13 +8,19 @@
         <br />영업시간: {{ location.startTime.substring(0, 5) }} ~
         {{ location.endTime.substring(0, 5) }}
       </p>
+      <button v-if="isInRange" @click="doAction" class="quiz-btn">
+        Quiz +1
+      </button>
     </div>
   </div>
 </template>
 <script setup>
+import { useToast } from 'vue-toastification';
+const toast = useToast();
 // 부모로부터 위치 정보를 props로 받음
 const props = defineProps({
   location: Object,
+  isInRange: Boolean,
 });
 
 // 닫기 이벤트를 부모에게 전달
@@ -27,6 +33,11 @@ const close = () => {
 function telChange(tel) {
   return tel.replace(/\s+/g, '').replace(/\)/g, '-');
 }
+
+// 버튼 클릭 핸들러
+const doAction = () => {
+  toast.success('퀴즈 횟수가 추가되었습니다!');
+};
 </script>
 <style>
 .modal-content {
@@ -49,6 +60,16 @@ function telChange(tel) {
   right: 15px;
   cursor: pointer;
   font-size: 24px;
+}
+.quiz-btn {
+  position: absolute;
+  bottom: 10px;
+  right: 15px;
+  font-size: 20px;
+  color: white;
+  border-radius: 10px;
+  border: none;
+  background-color: #f3b706;
 }
 
 .head-color {

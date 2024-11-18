@@ -4,6 +4,7 @@
   <StoreInfo
     v-if="showModal"
     :location="selectedLocation"
+    :isInRange="isInRange"
     @close="closeModal"
   />
 </template>
@@ -18,11 +19,13 @@ import StoreInfo from '@/components/StoreInfo.vue';
 const mapStore = useMapStore();
 const gpsStore = useGpsStore();
 const showModal = ref(false);
+const isInRange = ref(false);
 const selectedLocation = ref(null); // 선택된 마커 정보
 const map = ref();
 const userMarker = ref();
 
 onMounted(async () => {
+  gpsStore.startWatchingLocation();
   // 네이버 지도 API 로드
   const script = document.createElement('script');
   script.src =
@@ -32,10 +35,9 @@ onMounted(async () => {
   document.head.appendChild(script);
 
   script.onload = async () => {
-    gpsStore.startWatchingLocation();
     // 네이버 지도 생성
     map.value = new naver.maps.Map('map', {
-      center: new naver.maps.LatLng(gpsStore.latitude, gpsStore.longitude),
+      center: new naver.maps.LatLng(37.5665, 126.978),
       zoom: 19,
       minZoom: 15, // 최소 줌 레벨
     });
@@ -56,7 +58,7 @@ onMounted(async () => {
           userMarker.value.setPosition(userLatLng);
         }
         // 고정 마커와 실시간 마커 거리 비교 및 아이콘 변경
-        mapStore.updateStoreMarkersIcon(lat, lng, map.value);
+        mapStore.updateStoreMarkersIcon(lat, lng, map.value, checkInRange);
       }
     });
     //===================================================================
@@ -82,7 +84,10 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   gpsStore.stopWatchingLocation();
 });
-
+// 반경 내에 있는지 체크
+const checkInRange = (isIn) => {
+  isInRange.value = isIn; // 반경 내에 있으면 true, 아니면 false
+};
 // 마커 클릭 시 모달에 정보 표시
 const showLocationInfo = (location) => {
   selectedLocation.value = location;

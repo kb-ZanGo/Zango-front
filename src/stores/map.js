@@ -99,7 +99,8 @@ export const useMapStore = defineStore('map', {
       return R * c; // 거리 반환 (미터)
     },
     // 거리 계산
-    updateStoreMarkersIcon(currentLat, currentLng, map) {
+    updateStoreMarkersIcon(currentLat, currentLng, map, checkInRange) {
+      let isInRange = false;
       this.storeMarkers.forEach((marker, index) => {
         const markerPosition = marker.getPosition();
         const distance = this.getDistance(
@@ -112,10 +113,12 @@ export const useMapStore = defineStore('map', {
         if (distance < 100) {
           // 반경 100m 내일 때 애니메이션 추가
           marker.setAnimation(naver.maps.Animation.BOUNCE);
+          isInRange = true;
         } else {
           marker.setAnimation(null);
         }
       });
+      checkInRange(isInRange);
     },
   },
 });

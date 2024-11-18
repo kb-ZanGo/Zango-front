@@ -5,9 +5,9 @@ import ChoolCheck from '../pages/ChoolCheck.vue';
 import Roulette from '../pages/Roulette.vue';
 import QuizRegister from '@/pages/QuizRegister.vue';
 import QuizGroup from '@/pages/QuizGroup.vue';
-import FeedBack from '@/pages/side/FeedBack.vue';
-import GroupBuy from '@/pages/side/GroupBuy.vue';
-import HoneyTip from '@/pages/side/HoneyTip.vue';
+import FeedBack from '@/components/zzanda/FeedBack.vue';
+import GroupBuy from '@/components/zzanda/GroupBuy.vue';
+import HoneyTip from '@/components/zzanda/HoneyTip.vue';
 import Quiz from '@/pages/Quiz.vue';
 import QuizResult from '@/pages/QuizResult.vue';
 
@@ -67,8 +67,8 @@ const router = createRouter({
     {
       path: '/quiz/result',
       name: 'QuizResult',
-      component: QuizResult
-    }
+      component: QuizResult,
+    },
   ],
 });
 

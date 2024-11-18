@@ -16,22 +16,35 @@
                 <p class="answer">답: {{ quiz.answer }}</p>
             </div>
         </div>
+
+
+    </div>
+    <!-- 닫기 버튼 -->
+    <div class="close-container">
+        <button class="close-button" @click="close">확인</button>
     </div>
 </template>
 
 <script setup>
 import { ref } from 'vue';
 import { useResult } from '../stores/quizResult';
+import { useRouter } from 'vue-router';
 const { resultData } = useResult();
-
+const router = useRouter();
 // 퀴즈 리스트 예제 데이터
 const quizzes = resultData.value[0];
 console.log(quizzes.data)
 const correctCount = ref(quizzes.data.correctCount); // 맞춘 문제 수
-const pass = ref(quizzes.data.pass); // 전체 문제 수
+const pass = ref(quizzes.data.pass);
 // 닫기 버튼 클릭 시 동작
 const close = () => {
-    console.log("닫기 버튼 클릭"); // 실제로는 다른 동작이 필요할 수 있음
+    if (pass.value) {
+        let currentReward = localStorage.getItem('point');
+        currentReward = currentReward ? parseInt(currentReward) : 0;
+        localStorage.setItem('point', currentReward + quizzes.data.reward);
+        alert('보상을 받았습니다.');
+    }
+    router.push('/');
 };
 </script>
 

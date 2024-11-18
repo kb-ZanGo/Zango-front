@@ -125,6 +125,7 @@ function closeResult() {
   background-color: #f5f2ee;
   height: 90vh;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .title {

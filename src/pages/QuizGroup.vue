@@ -253,7 +253,7 @@ const goToQuiz = () => {
   cursor: pointer;
   text-align: center;
   position: fixed;
-  bottom: 0;
+  bottom: 100px;
   left: auto;
   right: auto;
   border-radius: 12px;
@@ -329,7 +329,7 @@ const goToQuiz = () => {
 
 .image-container {
   width: 100%;
-  height: 25%;
+  height: 15%;
   /* 원하는 높이 지정 */
   position: relative;
 }

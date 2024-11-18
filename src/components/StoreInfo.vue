@@ -15,8 +15,14 @@
   </div>
 </template>
 <script setup>
+import { computed } from 'vue';
 import { useToast } from 'vue-toastification';
+import { useQuizStore } from '@/stores/quiz';
 const toast = useToast();
+const quizStore = useQuizStore();
+
+quizStore.loadState();
+quizStore.resetQuizCount();
 // 부모로부터 위치 정보를 props로 받음
 const props = defineProps({
   location: Object,
@@ -36,23 +42,16 @@ function telChange(tel) {
 
 // 버튼 클릭 핸들러
 const doAction = () => {
-  const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD 형식
-
-  // 로컬 스토리지에서 마지막 퀴즈 클릭 날짜 가져오기
-  const lastQuizDate = localStorage.getItem('lastQuizDate');
-
-  if (lastQuizDate === today) {
-    // 이미 오늘 퀴즈를 풀었으면 에러 메시지 표시
+  try {
+    quizStore.addQuizCount();
+    toast.success('퀴즈 횟수가 추가되었습니다!');
+    console.log(quizStore.quizCount);
+  } catch (error) {
     toast.error(
       '이미 퀴즈 횟수 추가를 받으셨습니다!\n내일 0시에 초기화됩니다!',
       { html: true }
     );
-  } else {
-    // 퀴즈 날짜를 오늘로 저장
-    localStorage.setItem('lastQuizDate', today);
-
-    // 퀴즈 횟수 증가 후 토스트 메시지
-    toast.success('퀴즈 횟수가 추가되었습니다!');
+    console.log(quizStore.quizCount);
   }
 };
 </script>

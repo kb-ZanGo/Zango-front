@@ -29,7 +29,17 @@ const calendarDays = computed(() => {
 // 출석체크 함수
 const checkAttendance = (day) => {
   if (day.isToday && !attendancePoints.value[day.date.toDateString()]) {
-    const points = Math.floor(Math.random() * 30) + 1; // 1-30 포인트 랜덤 지급
+    // 가중치가 적용된 랜덤 포인트 생성
+    const weightedRandom = () => {
+      const random = Math.random() * 100;
+      if (random < 40) return Math.floor(Math.random() * 5) + 1; // 40% 확률로 1-5P
+      if (random < 70) return Math.floor(Math.random() * 5) + 6; // 30% 확률로 6-10P
+      if (random < 85) return Math.floor(Math.random() * 5) + 11; // 15% 확률로 11-15P
+      if (random < 95) return Math.floor(Math.random() * 10) + 16; // 10% 확률로 16-25P
+      return Math.floor(Math.random() * 5) + 26; // 5% 확률로 26-30P
+    };
+
+    const points = weightedRandom();
     attendancePoints.value[day.date.toDateString()] = points;
     alert(`${points}포인트가 지급되었습니다!`);
   }
@@ -37,60 +47,72 @@ const checkAttendance = (day) => {
 </script>
 
 <template>
-  <div class="top">
-    <div class="top-container">
-      <div class="text">
-        <div class="sub-title">매일 매일 랜덤 스타포인트!</div>
-        <div class="title">10/20/30번째엔 최대 5,000P</div>
-        <div class="sub-title">2024.11.01 ~ 2024.11.30</div>
-      </div>
-      <div class="image">
-        <img src="@/assets/icons/pigpig.png" class="pig" />
-      </div>
-      <div class="points">
-        <div class="count">
-          <span class="mini-title">용돈 받은 횟수</span>
-          <span class="mini-content">1/30</span>
+  <div class="choolCheck-container">
+    <div class="top">
+      <div class="top-container">
+        <div class="text">
+          <div class="sub-title">매일 매일 랜덤 스타포인트!</div>
+          <div class="title">10/20/30번째엔 최대 5,000P</div>
+          <div class="sub-title">2024.11.01 ~ 2024.11.30</div>
         </div>
-        <div class="got-points">
-          <span class="mini-title">내가 받은 스타포인트</span>
-          <span class="mini-content">10P</span>
+        <div class="image">
+          <img src="@/assets/icons/pigpig.png" class="pig" />
         </div>
-        <hr />
-        <div class="my-points">
-          <span class="mini-title">보유중인 스타포인트</span>
-          <span class="mini-content">10P</span>
+        <div class="points">
+          <div class="count">
+            <span class="mini-title">용돈 받은 횟수</span>
+            <span class="mini-content">1/30</span>
+          </div>
+          <div class="got-points">
+            <span class="mini-title">내가 받은 스타포인트</span>
+            <span class="mini-content">10P</span>
+          </div>
+          <hr />
+          <div class="my-points">
+            <span class="mini-title">보유중인 스타포인트</span>
+            <span class="mini-content">10P</span>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-  <div class="bottom">
-    <div class="container">
-      <div class="calendar">
-        <div v-for="day in calendarDays" :key="day.date" class="cell-wrapper">
-          <span :class="['date-number', { 'today-label': day.isToday }]">
-            {{ day.isToday ? 'TODAY' : day.date.getDate() + '일' }}
-          </span>
-          <div
-            :class="[
-              'cell',
-              {
-                past: day.isPast,
-                today: day.isToday,
-                checked: day.points > 0,
-              },
-            ]"
-          >
-            <img
-              v-if="day.isToday && !day.points"
-              src="@/assets/icons/point.png"
-              @click="checkAttendance(day)"
-              class="check-img"
-              alt="출석체크"
-            />
-            <div v-if="day.points" class="stamp-container">
-              <img src="@/assets/icons/stamp.png" class="stamp-img" alt="출석완료" />
-              <span class="stamp-points"></span>
+    <div class="hat">
+      <div class="diary-hat">
+        <div class="rings-container">
+          <div class="ring"></div>
+          <div class="ring"></div>
+          <div class="ring"></div>
+          <div class="ring"></div>
+        </div>
+      </div>
+    </div>
+    <div class="bottom">
+      <div class="container">
+        <div class="calendar">
+          <div v-for="day in calendarDays" :key="day.date" class="cell-wrapper">
+            <span :class="['date-number', { 'today-label': day.isToday }]">
+              {{ day.isToday ? 'TODAY' : day.date.getDate() + '일' }}
+            </span>
+            <div
+              :class="[
+                'cell',
+                {
+                  past: day.isPast,
+                  today: day.isToday,
+                  checked: day.points > 0,
+                },
+              ]"
+            >
+              <img
+                v-if="day.isToday && !day.points"
+                src="@/assets/icons/point.png"
+                @click="checkAttendance(day)"
+                class="check-img"
+                alt="출석체크"
+              />
+              <div v-if="day.points" class="stamp-container">
+                <img src="@/assets/icons/stamp.png" class="stamp-img" alt="출석완료" />
+                <span class="stamp-points"></span>
+              </div>
             </div>
           </div>
         </div>
@@ -100,6 +122,12 @@ const checkAttendance = (day) => {
 </template>
 
 <style scoped>
+.choolCheck-container {
+  width: 100%;
+  height: 90vh;
+  overflow-y: auto;
+}
+
 .top {
   position: relative;
   display: flex;
@@ -117,6 +145,40 @@ const checkAttendance = (day) => {
   align-items: center;
   margin-bottom: 30px;
   background-color: #f5f2ee;
+}
+
+.diary-hat {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  height: 60px;
+  padding: 50px 10px 0px 10px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  background-color: #f5bb65;
+  border-radius: 20px 20px 0px 0px;
+  box-shadow: inset 0px 3px 5px 0px rgba(0, 0, 0, 0.3);
+}
+
+.rings-container {
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 75px;
+}
+
+.ring {
+  width: 8px;
+  height: 30px;
+  background-color: #ffffff;
+  border-radius: 4px;
+  box-shadow: inset 0px 3px 4px 0px rgba(0, 0, 0, 0.3);
 }
 
 .container {
@@ -210,7 +272,6 @@ const checkAttendance = (day) => {
 .cell {
   width: 100%;
   aspect-ratio: 1;
-  border: 1px solid #ddd;
   border-radius: 50%;
   text-align: center;
   display: flex;
@@ -218,20 +279,22 @@ const checkAttendance = (day) => {
   align-items: center;
   justify-content: center;
   background-color: #ffffff;
+  box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.15);
 }
 
 .past {
+  border: none;
   background-color: #e0e0e0;
   color: #666;
+  box-shadow: none;
 }
 
-/* .today {
-  border-color: #4caf50;
-  background-color: #f0f7f0;
-} */
+.today {
+  background-color: #ffffff;
+}
 
 .checked {
-  background-color: #e8f5e9;
+  background-color: #ffffff;
   border: none;
 }
 

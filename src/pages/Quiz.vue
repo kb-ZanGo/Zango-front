@@ -147,11 +147,10 @@ onMounted(fetchQuizzes);
   border: none;
   background-color: white;
   font-size: 30px;
-  padding: 0.5rem;
+  padding: 0.4rem;
 }
 .top-bar-text {
   width: 100px;
-  height: 50px;
   border: none;
   font-size: 25px;
   padding: 0.5rem;

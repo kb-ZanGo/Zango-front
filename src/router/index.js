@@ -10,6 +10,7 @@ import GroupBuy from '@/components/zzanda/GroupBuy.vue';
 import HoneyTip from '@/components/zzanda/HoneyTip.vue';
 import Quiz from '@/pages/Quiz.vue';
 import QuizResult from '@/pages/QuizResult.vue';
+import Detail from '@/pages/Detail.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -68,6 +69,11 @@ const router = createRouter({
       path: '/quiz/result',
       name: 'QuizResult',
       component: QuizResult,
+    },
+    {
+      path: '/detail',
+      name: 'Detail',
+      component: Detail,
     },
   ],
 });

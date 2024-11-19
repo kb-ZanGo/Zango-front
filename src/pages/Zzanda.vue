@@ -5,7 +5,13 @@
       <!-- 유저가 설정한 목표가 들어가게 해야됨 -->
       설정한 목표
       <!-- 추후 연동 해야됨 -->
-      <progress class="progress" id="progress" value="30" min="0" max="100"></progress>
+      <progress
+        class="progress"
+        id="progress"
+        value="30"
+        min="0"
+        max="100"
+      ></progress>
     </div>
     <div class="card-wrapper">
       <div class="cards" ref="cards">
@@ -23,12 +29,22 @@
       <div v-if="showButtons" class="extra-buttons">
         <button class="extra-button" @click="goToHoneyTip">꿀팁</button>
         <button class="extra-button" @click="goToGroupBuy">공동구매</button>
-        <button class="extra-button" @click="goToFeedBack" style="font-size: 9px">피드백</button>
+        <button
+          class="extra-button"
+          @click="goToFeedBack"
+          style="font-size: 9px"
+        >
+          피드백
+        </button>
       </div>
     </div>
     <div class="gift">기프티스타</div>
     <div class="iframe-container">
-      <iframe scrolling="yes" src="https://app.giftistar.net/category" id="giftistar"></iframe>
+      <iframe
+        scrolling="yes"
+        src="https://app.giftistar.net/category"
+        id="giftistar"
+      ></iframe>
     </div>
   </div>
 </template>

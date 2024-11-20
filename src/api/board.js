@@ -15,3 +15,14 @@ export const getHoneyTipList = (bigCategoryId) => {
       throw error;
     });
 };
+
+// 게시글 상세 조회
+export const getHoneyTipDetail = (boardId) => {
+  return api
+    .get(`/${boardId}`)
+    .then((response) => response.data)
+    .catch((error) => {
+      console.error('게시글 조회 실패:', error);
+      throw error;
+    });
+};

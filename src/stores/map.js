@@ -19,7 +19,7 @@ export const useMapStore = defineStore('map', {
     },
     // store 정보 api 불러오기
     async getApi() {
-      const url = `/api/v2/map?lat=${this.lat}&lon=${this.lon}&radius=${this.radius}`;
+      const url = `https://zango.site/api/v2/map?lat=${this.lat}&lon=${this.lon}&radius=${this.radius}`;
       try {
         const response = await axios.get(url);
         if (response.status === 200 && response.data.data.length > 0) {
@@ -110,8 +110,8 @@ export const useMapStore = defineStore('map', {
           markerPosition.lng()
         );
 
-        if (distance < 100) {
-          // 반경 100m 내일 때 애니메이션 추가
+        if (distance < 20) {
+          // 반경 20m 내 일때 애니메이션 추가
           marker.setAnimation(naver.maps.Animation.BOUNCE);
           isInRange = true;
         } else {

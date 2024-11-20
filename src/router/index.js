@@ -10,66 +10,73 @@ import GroupBuy from '@/components/zzanda/GroupBuy.vue';
 import HoneyTip from '@/components/zzanda/HoneyTip.vue';
 import Quiz from '@/pages/Quiz.vue';
 import QuizResult from '@/pages/QuizResult.vue';
+import FeedBackDetail from '@/pages/detail/FeedBackDetail.vue';
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [
-    {
-      path: '/',
-      name: 'map',
-      component: Map,
-    },
-    {
-      path: '/zzanda',
-      name: 'zzanda',
-      component: Zzanda,
-    },
-    {
-      path: '/choolCheck',
-      name: 'choolCheck',
-      component: ChoolCheck,
-    },
-    {
-      path: '/roulette',
-      name: 'roulette',
-      component: Roulette,
-    },
-    {
-      path: '/quiz/regi',
-      name: 'quizRegi',
-      component: QuizRegister,
-    },
-    {
-      path: '/quiz',
-      name: 'quiz',
-      component: QuizGroup,
-    },
-    {
-      path: '/honeytip',
-      name: 'HoneyTip',
-      component: HoneyTip,
-    },
-    {
-      path: '/groupbuy',
-      name: 'GroupBuy',
-      component: GroupBuy,
-    },
-    {
-      path: '/feedback',
-      name: 'FeedBack',
-      component: FeedBack,
-    },
-    {
-      path: '/quiz/:quizGroupId',
-      name: 'Quiz',
-      component: Quiz,
-    },
-    {
-      path: '/quiz/result',
-      name: 'QuizResult',
-      component: QuizResult,
-    },
-  ],
+    history: createWebHistory(import.meta.env.BASE_URL),
+    routes: [
+        {
+            path: '/',
+            name: 'map',
+            component: Map,
+        },
+        {
+            path: '/zzanda',
+            name: 'zzanda',
+            component: Zzanda,
+        },
+        {
+            path: '/choolCheck',
+            name: 'choolCheck',
+            component: ChoolCheck,
+        },
+        {
+            path: '/roulette',
+            name: 'roulette',
+            component: Roulette,
+        },
+        {
+            path: '/quiz/regi',
+            name: 'quizRegi',
+            component: QuizRegister,
+        },
+        {
+            path: '/quiz',
+            name: 'quiz',
+            component: QuizGroup,
+        },
+        {
+            path: '/honeytip',
+            name: 'HoneyTip',
+            component: HoneyTip,
+        },
+        {
+            path: '/groupbuy',
+            name: 'GroupBuy',
+            component: GroupBuy,
+        },
+        {
+            path: '/feedback',
+            name: 'FeedBack',
+            component: FeedBack,
+        },
+        {
+            path: '/quiz/:quizGroupId',
+            name: 'Quiz',
+            component: Quiz,
+        },
+        {
+            path: '/quiz/result',
+            name: 'QuizResult',
+            component: QuizResult,
+        },
+        {
+            path: '/feedback/detail/:boardId',
+            name: 'FeedBackDetail',
+            component: FeedBackDetail,
+            props: true,
+        },
+    ],
 });
 
 export default router;

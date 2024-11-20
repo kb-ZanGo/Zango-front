@@ -2,9 +2,7 @@
   <div class="container">
     <div class="diary">짠내나는 다이어리</div>
     <div class="goal">
-      <!-- 유저가 설정한 목표가 들어가게 해야됨 -->
       설정한 목표
-      <!-- 추후 연동 해야됨 -->
       <progress class="progress" id="progress" value="30" min="0" max="100"></progress>
     </div>
     <div class="card-wrapper">
@@ -14,7 +12,6 @@
         </div>
       </div>
     </div>
-    <div class="feedback">피드백 목록</div>
     <div class="list">
       <div class="category-group-wrapper">
         <div class="category-group">
@@ -112,6 +109,44 @@
         <button class="extra-button" @click="goToFeedBack" style="font-size: 9px">피드백</button>
       </div>
     </div>
+    <div class="feedback">
+      <h3>피드백 목록</h3>
+      <div class="feedback-list">
+        <div
+          v-for="item in currentPageItems"
+          :key="item.feedBackId"
+          class="feedback-item"
+          @click="goToFeedBackDetail(item.feedBackId)"
+        >
+          <div class="feedback-title">{{ item.title }}</div>
+          <div class="feedback-info">
+            <span class="feedback-date">{{ item.regiDate }}</span>
+            <span class="feedback-likes">👍 {{ item.likeCnt }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="pagination">
+        <button class="page-btn" @click="changePage(currentPage - 1)" :disabled="currentPage === 1">
+          &lt;
+        </button>
+        <button
+          v-for="pageNum in displayedPages"
+          :key="pageNum"
+          class="page-btn"
+          :class="{ active: currentPage === pageNum }"
+          @click="changePage(pageNum)"
+        >
+          {{ pageNum }}
+        </button>
+        <button
+          class="page-btn"
+          @click="changePage(currentPage + 1)"
+          :disabled="currentPage === totalPages"
+        >
+          &gt;
+        </button>
+      </div>
+    </div>
     <div class="gift">기프티스타</div>
     <div class="iframe-container">
       <iframe scrolling="yes" src="https://app.giftistar.net/category" id="giftistar"></iframe>
@@ -120,6 +155,8 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 import { getHoneyTipList } from '@/api/board';
 
 export default {
@@ -129,8 +166,33 @@ export default {
       currentCategory: 1,
       cards: ['게시글 1', '게시글 2', '게시글 3', '게시글 4', '게시글 5'], // 수정
       showButtons: false,
+      feedbackList: [],
+      currentPage: 1,
+      itemsPerPage: 4,
+      maxDisplayPages: 5,
       clickedRow: null,
     };
+  },
+  computed: {
+    totalPages() {
+      return Math.ceil(this.feedbackList.length / this.itemsPerPage);
+    },
+    currentPageItems() {
+      const start = (this.currentPage - 1) * this.itemsPerPage;
+      const end = start + this.itemsPerPage;
+      return this.feedbackList.slice(start, end);
+    },
+    displayedPages() {
+      let start = Math.max(1, this.currentPage - Math.floor(this.maxDisplayPages / 2));
+      let end = start + this.maxDisplayPages - 1;
+
+      if (end > this.totalPages) {
+        end = this.totalPages;
+        start = Math.max(1, end - this.maxDisplayPages + 1);
+      }
+
+      return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+    },
   },
   methods: {
     fetchHoneyTips(bigCategoryId) {
@@ -167,6 +229,25 @@ export default {
     goToFeedBack() {
       this.$router.push({ name: 'FeedBack' });
     },
+    goToFeedBackDetail(boardId) {
+      this.$router.push({
+        name: 'FeedBackDetail',
+        params: { boardId: boardId },
+      });
+    },
+    async fetchFeedbackList() {
+      try {
+        const response = await axios.get('https://zango.site/api/boards/feedback/list');
+        this.feedbackList = response.data;
+      } catch (error) {
+        console.error('피드백 목록 조회 실패:', error);
+      }
+    },
+    changePage(page) {
+      if (page >= 1 && page <= this.totalPages) {
+        this.currentPage = page;
+      }
+    },
   },
   mounted() {
     this.fetchHoneyTips(this.currentCategory);
@@ -175,6 +256,7 @@ export default {
     const cardsWrapper = this.$refs.cards;
     const cardsClone = cardsWrapper.cloneNode(true);
     cardsWrapper.parentElement.appendChild(cardsClone);
+    this.fetchFeedbackList();
   },
 };
 </script>
@@ -259,14 +341,57 @@ export default {
 }
 
 .feedback {
-  background-color: #f0f0f0;
-  border-radius: 10px;
-  padding: 20px;
-  margin: 10px;
-  height: 180px;
-  box-sizing: border-box;
-  flex: 1 1 48%;
+  padding: 15px;
+}
+
+.feedback-list {
   margin-top: 10px;
+}
+
+.feedback-item {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.feedback-title {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.feedback-info {
+  display: flex;
+  gap: 10px;
+  font-size: 12px;
+  color: #666;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  margin-top: 15px;
+}
+
+.page-btn {
+  padding: 5px 10px;
+  border: 1px solid #ddd;
+  background: white;
+  cursor: pointer;
+  border-radius: 3px;
+}
+
+.page-btn.active {
+  background: #f5bb65;
+  color: white;
+  border-color: #f5bb65;
+}
+
+.page-btn:disabled {
+  background: #f0f0f0;
+  cursor: not-allowed;
 }
 
 .list {

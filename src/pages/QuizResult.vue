@@ -15,10 +15,11 @@
         <h4>{{ index + 1 }}. {{ quiz.quizTitle }}</h4>
         <p class="answer">답: {{ quiz.answer }}</p>
       </div>
+      <div style="display: flex; margin-top: 5%">
+        <button class="close-button" @click="close">확인</button>
+      </div>
     </div>
-    <div style="display: flex; margin-top: 5%">
-      <button class="close-button" @click="close">확인</button>
-    </div>
+
   </div>
 </template>
 
@@ -48,6 +49,7 @@ const close = () => {
 <style scoped>
 .container {
   width: 100%;
+  height: 110vh;
   max-width: 500px;
   margin: auto;
   font-family: Arial, sans-serif;
@@ -96,7 +98,7 @@ const close = () => {
 }
 
 .quiz-item {
-  background: #f9f9f9;
+  border: 1px solid #f6c27a;
   padding: 15px;
   border-radius: 8px;
   margin-bottom: 15px;

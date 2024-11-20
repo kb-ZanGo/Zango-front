@@ -61,6 +61,10 @@ const roulette = () => {
 };
 </script>
 <style>
+i {
+  color: #F5BA65
+}
+
 .menu {
   width: 100%;
   height: 10vh;
@@ -81,6 +85,8 @@ const roulette = () => {
 }
 
 .text-container {
+
+  font-weight: bold;
   font-size: 60%;
 }
 </style>

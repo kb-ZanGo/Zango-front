@@ -67,7 +67,9 @@ const goBack = () => {
 };
 const fetchQuizzes = async () => {
   try {
-    const response = await axios.get(`/api/quiz/quizGroup/${quizGroupId}`);
+    const response = await axios.get(
+      `https://zango.site/api/quiz/quizGroup/${quizGroupId}`
+    );
     quizzes.value = response.data.data;
   } catch (error) {
     console.error('데이터 로드 에러:', error);
@@ -97,7 +99,7 @@ const goToNextQuiz = () => {
 
 // 결과 보기 함수
 const showResults = async () => {
-  const result = await axios.post('/api/dailyQuiz/result', {
+  const result = await axios.post('https://zango.site/api/dailyQuiz/result', {
     groupId: quizGroupId,
     answer: selectedAnswers.value,
   });

@@ -69,7 +69,7 @@ onMounted(async () => {
     watch([() => gpsStore.latitude, () => gpsStore.longitude], ([lat, lng]) => {
       if (lat && lng) {
         if (buttonState.value) {
-          const userLatLng = new naver.maps.LatLng(lat, lng);
+          let userLatLng = new naver.maps.LatLng(lat, lng);
           // 사용자의 위치가 바뀔 때마다 지도 중심 이동
           map.value.setCenter(userLatLng);
         }

@@ -67,7 +67,9 @@ const goBack = () => {
 };
 const fetchQuizzes = async () => {
   try {
-    const response = await axios.get(`/api/quiz/quizGroup/${quizGroupId}`);
+    const response = await axios.get(
+      `https://zango.site/api/quiz/quizGroup/${quizGroupId}`
+    );
     quizzes.value = response.data.data;
   } catch (error) {
     console.error('데이터 로드 에러:', error);

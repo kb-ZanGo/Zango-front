@@ -26,6 +26,8 @@ const userMarker = ref();
 const buttonState = ref(false);
 const locationBtn =
   '<img src="/images/center.png" alt="Location Button" style="width: 70px; height: 70px;">';
+let isMapCentered = false;
+
 onMounted(async () => {
   gpsStore.startWatchingLocation();
   // 네이버 지도 API 로드
@@ -66,26 +68,54 @@ onMounted(async () => {
     });
 
     // buttonState가 true일때만 gps가 업데이트될 때마다 지도와 마커 위치를 업데이트(포켓몬고 모드)
-    watch([() => gpsStore.latitude, () => gpsStore.longitude], ([lat, lng]) => {
-      if (lat && lng) {
-        if (buttonState.value) {
-          let userLatLng = new naver.maps.LatLng(lat, lng);
-          // 사용자의 위치가 바뀔 때마다 지도 중심 이동
-          map.value.setCenter(userLatLng);
+    if (buttonState.value) {
+      watch(
+        [() => gpsStore.latitude, () => gpsStore.longitude],
+        ([lat, lng]) => {
+          if (lat && lng) {
+            const userLatLng = new naver.maps.LatLng(lat, lng);
+            // 사용자의 위치가 바뀔 때마다 지도 중심 이동
+            map.value.setCenter(userLatLng);
+            // 사용자 위치 마커가 없으면 새로 생성, 있으면 위치 업데이트
+            if (!userMarker.value) {
+              userMarker.value = new naver.maps.Marker({
+                position: userLatLng,
+                map: map.value,
+              });
+            } else {
+              userMarker.value.setPosition(userLatLng);
+            }
+            // 고정 마커와 실시간 마커 거리 비교 및 아이콘 변경
+            mapStore.updateStoreMarkersIcon(lat, lng, map.value, checkInRange);
+          }
         }
-        // 사용자 위치 마커가 없으면 새로 생성, 있으면 위치 업데이트
-        if (!userMarker.value) {
-          userMarker.value = new naver.maps.Marker({
-            position: userLatLng,
-            map: map.value,
-          });
-        } else {
-          userMarker.value.setPosition(userLatLng);
+      );
+    } else {
+      watch(
+        [() => gpsStore.latitude, () => gpsStore.longitude],
+        ([lat, lng]) => {
+          if (lat && lng) {
+            const userLatLng = new naver.maps.LatLng(lat, lng);
+            // 처음 한 번만 지도의 중심을 설정
+            if (!isMapCentered) {
+              map.value.setCenter(userLatLng);
+              isMapCentered = true; // 한 번 호출 후 true로 설정
+            }
+            // 사용자 위치 마커가 없으면 새로 생성, 있으면 위치 업데이트
+            if (!userMarker.value) {
+              userMarker.value = new naver.maps.Marker({
+                position: userLatLng,
+                map: map.value,
+              });
+            } else {
+              userMarker.value.setPosition(userLatLng);
+            }
+            // 고정 마커와 실시간 마커 거리 비교 및 아이콘 변경
+            mapStore.updateStoreMarkersIcon(lat, lng, map.value, checkInRange);
+          }
         }
-        // 고정 마커와 실시간 마커 거리 비교 및 아이콘 변경
-        mapStore.updateStoreMarkersIcon(lat, lng, map.value, checkInRange);
-      }
-    });
+      );
+    }
     //===================================================================
     //테스트용 클릭 이벤트
     new naver.maps.Event.addListener(map.value, 'click', function (e) {

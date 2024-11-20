@@ -24,8 +24,9 @@ const selectedLocation = ref(null); // 선택된 마커 정보
 const map = ref();
 const userMarker = ref();
 const buttonState = ref(true);
+let isLocationBtnOn = false;
 const locationBtn =
-  '<img src="/images/center.png" alt="Location Button" style="width: 70px; height: 70px;">';
+  '<img src="/images/centerOn.png" alt="Location Button" style="width: 80px; height: 80px;">';
 let isMapCentered = false;
 let stopTracking;
 
@@ -58,34 +59,40 @@ onMounted(async () => {
     });
     // 중심위치로 이동하는 컨트롤 버튼
     naver.maps.Event.once(map.value, 'init', function () {
-      //customControl 객체 이용하기
+      // CustomControl 생성
       const customControl = new naver.maps.CustomControl(locationBtn, {
         position: naver.maps.Position.LEFT_BOTTOM,
       });
       customControl.setMap(map.value);
 
+      // 클릭 이벤트 추가
       naver.maps.Event.addDOMListener(
         customControl.getElement(),
         'click',
         function () {
-          map.value.setZoom(18);
+          isLocationBtnOn = !isLocationBtnOn; // 상태 토글
+
+          const button = customControl.getElement(); // 버튼 DOM 엘리먼트
+          button.innerHTML = isLocationBtnOn
+            ? `<img src="/images/center.png" alt="Location Button" style="width: 80px; height: 80px;">`
+            : `<img src="/images/centerOn.png" alt="Location Button" style="width: 80px; height: 80px;">`;
+          buttonState.value = !buttonState.value;
+          console.log(buttonState.value);
+          map.value.setZoom(19);
           const userLatLng = new naver.maps.LatLng(
             gpsStore.latitude,
             gpsStore.longitude
           );
           map.value.setCenter(userLatLng);
-          buttonState.value = true;
-          console.log('true');
         }
       );
     });
 
-    // buttonState가 true일때만 gps가 업데이트될 때마다 지도와 마커 위치를 업데이트(포켓몬고 모드)
+    // buttonState.value가 true일때만 gps가 업데이트될 때마다 지도와 마커 위치를 업데이트(포켓몬고 모드)
     watch(
-      () => buttonState.value, // buttonState의 변화를 감지
+      () => buttonState.value, // buttonState.value의 변화를 감지
       (newState) => {
         if (stopTracking) stopTracking();
-
         if (newState) {
           // 실시간 위치 추적 및 지도 중심 이동
           stopTracking = watch(
@@ -117,33 +124,6 @@ onMounted(async () => {
           );
         } else {
           console.log('실시간 추적이 비활성화되었습니다.');
-
-          //   // 실시간 추적이 꺼졌을 때
-          //   watch(
-          //     [() => gpsStore.latitude, () => gpsStore.longitude],
-          //     ([lat, lng]) => {
-          //       if (lat && lng) {
-          //         const userLatLng = new naver.maps.LatLng(lat, lng);
-          //         // 사용자 위치 마커가 없으면 새로 생성, 있으면 위치 업데이트
-          //         if (!userMarker.value) {
-          //           userMarker.value = new naver.maps.Marker({
-          //             position: userLatLng,
-          //             map: map.value,
-          //           });
-          //         } else {
-          //           userMarker.value.setPosition(userLatLng);
-          //         }
-
-          //         // 고정 마커와 실시간 마커 거리 비교 및 아이콘 변경
-          //         mapStore.updateStoreMarkersIcon(
-          //           lat,
-          //           lng,
-          //           map.value,
-          //           checkInRange
-          //         );
-          //       }
-          //     }
-          //   );
         }
       }
     );
@@ -158,8 +138,8 @@ onMounted(async () => {
 
     naver.maps.Event.addListener(map.value, 'idle', () => {
       if (buttonState.value) {
-        buttonState.value = false; // 버튼 상태를 false로 변경
-        console.log(buttonState.value);
+        // buttonState.value.value = false; // 버튼 상태를 false로 변경
+        // console.log(buttonState.value);
       }
       const center = map.value.getCenter();
       mapStore.setLat(center.lat());
@@ -193,5 +173,19 @@ const closeModal = () => {
 #map {
   width: 100%;
   height: 90vh;
+}
+#locationBtn {
+  width: 70px;
+  height: 70px;
+  background-size: cover;
+  cursor: pointer;
+}
+
+#locationBtn.location-off {
+  background-image: url('/images/locationBtn.png');
+}
+
+#locationBtn.location-on {
+  background-image: url('/images/locationBtnOn.png');
 }
 </style>

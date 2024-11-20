@@ -110,8 +110,8 @@ export const useMapStore = defineStore('map', {
           markerPosition.lng()
         );
 
-        if (distance < 100) {
-          // 반경 100m 내일 때 애니메이션 추가
+        if (distance < 20) {
+          // 반경 20m 내 일때 애니메이션 추가
           marker.setAnimation(naver.maps.Animation.BOUNCE);
           isInRange = true;
         } else {

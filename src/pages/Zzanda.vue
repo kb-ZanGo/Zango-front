@@ -13,8 +13,21 @@
         </div>
         <div class="card-wrapper">
             <div class="cards" ref="cards">
-                <div v-for="(card, index) in cards" :key="index" class="card">
-                    {{ card }}
+                <div
+                    v-for="(card, index) in popularPosts"
+                    :key="card.honeyBoardId"
+                    class="card"
+                    @click="goToHoneyTipDetail(card.honeyBoardId)"
+                >
+                    <div class="card-rank">{{ (index % 5) + 1 }}위</div>
+                    <div class="card-title">{{ card.title }}</div>
+                    <div class="card-info">
+                        <div class="card-author">{{ card.username }}</div>
+                        <div class="card-stats">
+                            <span>👍 {{ card.likeCnt }}</span>
+                            <span>👀 {{ card.viewCnt }}</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -46,13 +59,10 @@
                     class="feedback-item"
                     @click="goToFeedBackDetail(item.feedBackId)"
                 >
-                    <div class="feedback-title">{{ item.title }}</div>
-                    <div class="feedback-info">
-                        <span class="feedback-date">{{ item.regiDate }}</span>
-                        <span class="feedback-likes"
-                            >👍 {{ item.likeCnt }}</span
-                        >
-                    </div>
+                    <div class="feedback-title">{{ item.username }}</div>
+                    <div class="feedback-likes">👍 {{ item.likeCnt }}</div>
+                    <div class="feedback-username">{{ item.title }}</div>
+                    <div class="feedback-date">{{ item.regiDate }}</div>
                 </div>
             </div>
             <div class="pagination">
@@ -98,7 +108,7 @@ import axios from 'axios';
 export default {
     data() {
         return {
-            cards: ['게시글 1', '게시글 2', '게시글 3', '게시글 4', '게시글 5'], // 수정
+            popularPosts: [],
             showButtons: false,
             feedbackList: [],
             currentPage: 1,
@@ -149,6 +159,12 @@ export default {
                 params: { boardId: boardId },
             });
         },
+        goToHoneyTipDetail(boardId) {
+            this.$router.push({
+                name: 'HoneyTipDetail',
+                params: { boardId: boardId },
+            });
+        },
         async fetchFeedbackList() {
             try {
                 const response = await axios.get('/api/boards/feedback/list');
@@ -162,11 +178,20 @@ export default {
                 this.currentPage = page;
             }
         },
+        async fetchPopularPosts() {
+            try {
+                const response = await axios.get(
+                    '/api/boards/honeytip/popular'
+                );
+                this.popularPosts = response.data;
+                this.popularPosts = [...response.data, ...response.data];
+            } catch (error) {
+                console.error('인기 게시글 조회 실패:', error);
+            }
+        },
     },
     mounted() {
-        const cardsWrapper = this.$refs.cards;
-        const cardsClone = cardsWrapper.cloneNode(true);
-        cardsWrapper.parentElement.appendChild(cardsClone);
+        this.fetchPopularPosts();
         this.fetchFeedbackList();
     },
 };
@@ -243,12 +268,53 @@ export default {
     background-color: #f0f0f0;
     border-radius: 10px;
     margin-right: 4vw;
+    padding: 15px;
     display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 4vw;
+    flex-direction: column;
+    justify-content: space-between;
     border: none;
     box-sizing: border-box;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card-rank {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #f5bb65;
+    margin-bottom: 5px;
+}
+
+.card-title {
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.card-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    font-size: 0.8rem;
+}
+
+.card-author {
+    color: #666;
+}
+
+.card-stats {
+    display: flex;
+    gap: 8px;
+    color: #666;
 }
 
 .feedback {
@@ -262,21 +328,37 @@ export default {
 .feedback-item {
     padding: 10px;
     border-bottom: 1px solid #ddd;
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 2fr 0.5fr 0.8fr 1fr;
+    gap: 15px;
     align-items: center;
+    cursor: pointer;
 }
 
 .feedback-title {
     font-size: 14px;
     font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-.feedback-info {
-    display: flex;
-    gap: 10px;
+.feedback-likes {
     font-size: 12px;
     color: #666;
+    text-align: center;
+}
+
+.feedback-username {
+    font-size: 12px;
+    color: #666;
+    text-align: center;
+}
+
+.feedback-date {
+    font-size: 12px;
+    color: #888;
+    text-align: right;
 }
 
 .pagination {
@@ -390,7 +472,7 @@ iframe {
         transform: translateX(0);
     }
     100% {
-        transform: translateX(-100%);
+        transform: translateX(-50%);
     }
 }
 
@@ -402,8 +484,18 @@ iframe {
     .card {
         width: 35vw;
         height: 45vw;
-        font-size: 7vw;
-        margin-right: 5vw;
+    }
+
+    .card-rank {
+        font-size: 1rem;
+    }
+
+    .card-title {
+        font-size: 0.9rem;
+    }
+
+    .card-info {
+        font-size: 0.7rem;
     }
 
     .list {
@@ -423,8 +515,6 @@ iframe {
     .card {
         width: 45vw;
         height: 40vw;
-        font-size: 5vw;
-        margin-right: 5vw;
     }
 
     .list {

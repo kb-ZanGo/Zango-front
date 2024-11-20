@@ -11,6 +11,7 @@ import HoneyTip from '@/components/zzanda/HoneyTip.vue';
 import Quiz from '@/pages/Quiz.vue';
 import QuizResult from '@/pages/QuizResult.vue';
 import FeedBackDetail from '@/pages/detail/FeedBackDetail.vue';
+import HoneyTipDetail from '@/pages/detail/HoneyTipDetail.vue';
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -74,6 +75,12 @@ const router = createRouter({
             path: '/feedback/detail/:boardId',
             name: 'FeedBackDetail',
             component: FeedBackDetail,
+            props: true,
+        },
+        {
+            path: '/honeytip/detail/:boardId',
+            name: 'HoneyTipDetail',
+            component: HoneyTipDetail,
             props: true,
         },
     ],

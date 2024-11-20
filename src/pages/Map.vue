@@ -27,6 +27,7 @@ const buttonState = ref(true);
 const locationBtn =
   '<img src="/images/center.png" alt="Location Button" style="width: 70px; height: 70px;">';
 let isMapCentered = false;
+let stopTracking;
 
 onMounted(async () => {
   gpsStore.startWatchingLocation();
@@ -83,9 +84,11 @@ onMounted(async () => {
     watch(
       () => buttonState.value, // buttonState의 변화를 감지
       (newState) => {
+        if (stopTracking) stopTracking();
+
         if (newState) {
           // 실시간 위치 추적 및 지도 중심 이동
-          watch(
+          stopTracking = watch(
             [() => gpsStore.latitude, () => gpsStore.longitude],
             ([lat, lng]) => {
               if (lat && lng) {
@@ -113,32 +116,34 @@ onMounted(async () => {
             }
           );
         } else {
-          // 실시간 추적이 꺼졌을 때
-          watch(
-            [() => gpsStore.latitude, () => gpsStore.longitude],
-            ([lat, lng]) => {
-              if (lat && lng) {
-                const userLatLng = new naver.maps.LatLng(lat, lng);
-                // 사용자 위치 마커가 없으면 새로 생성, 있으면 위치 업데이트
-                if (!userMarker.value) {
-                  userMarker.value = new naver.maps.Marker({
-                    position: userLatLng,
-                    map: map.value,
-                  });
-                } else {
-                  userMarker.value.setPosition(userLatLng);
-                }
+          console.log('실시간 추적이 비활성화되었습니다.');
 
-                // 고정 마커와 실시간 마커 거리 비교 및 아이콘 변경
-                mapStore.updateStoreMarkersIcon(
-                  lat,
-                  lng,
-                  map.value,
-                  checkInRange
-                );
-              }
-            }
-          );
+          //   // 실시간 추적이 꺼졌을 때
+          //   watch(
+          //     [() => gpsStore.latitude, () => gpsStore.longitude],
+          //     ([lat, lng]) => {
+          //       if (lat && lng) {
+          //         const userLatLng = new naver.maps.LatLng(lat, lng);
+          //         // 사용자 위치 마커가 없으면 새로 생성, 있으면 위치 업데이트
+          //         if (!userMarker.value) {
+          //           userMarker.value = new naver.maps.Marker({
+          //             position: userLatLng,
+          //             map: map.value,
+          //           });
+          //         } else {
+          //           userMarker.value.setPosition(userLatLng);
+          //         }
+
+          //         // 고정 마커와 실시간 마커 거리 비교 및 아이콘 변경
+          //         mapStore.updateStoreMarkersIcon(
+          //           lat,
+          //           lng,
+          //           map.value,
+          //           checkInRange
+          //         );
+          //       }
+          //     }
+          //   );
         }
       }
     );

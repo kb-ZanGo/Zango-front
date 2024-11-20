@@ -83,7 +83,7 @@ onMounted(async () => {
     watch(
       () => buttonState.value, // buttonState의 변화를 감지
       (newState) => {
-        if (buttonState.value) {
+        if (newState) {
           // 실시간 위치 추적 및 지도 중심 이동
           watch(
             [() => gpsStore.latitude, () => gpsStore.longitude],
@@ -154,14 +154,13 @@ onMounted(async () => {
     naver.maps.Event.addListener(map.value, 'idle', () => {
       if (buttonState.value) {
         buttonState.value = false; // 버튼 상태를 false로 변경
-        console.log('buttonState가 false로 변경되었습니다.');
+        console.log(buttonState.value);
       }
       const center = map.value.getCenter();
       mapStore.setLat(center.lat());
       mapStore.setLon(center.lng());
       mapStore.getApi();
       mapStore.loadStoreMarkers(map.value, showLocationInfo); // 첫 화면 마커 로드
-      if (buttonState.value == false) console.log('false');
     });
   };
 });

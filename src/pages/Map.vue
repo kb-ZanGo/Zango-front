@@ -58,10 +58,10 @@ onMounted(async () => {
         customControl.getElement(),
         'click',
         function () {
-          buttonState.value = true;
+          map.value.setZoom(18);
           const userLatLng = new naver.maps.LatLng(gpsStore.lat, gpsStore.lng);
           map.value.setCenter(userLatLng);
-          map.value.setZoom(18);
+          buttonState.value = true;
           console.log('true');
         }
       );

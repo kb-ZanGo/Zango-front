@@ -11,11 +11,7 @@
     </div>
     <!-- 퀴즈 항목 리스트 -->
     <div class="quiz-list">
-      <div
-        v-for="(quiz, index) in quizzes.data.results"
-        :key="quiz.id"
-        class="quiz-item"
-      >
+      <div v-for="(quiz, index) in quizzes.data.results" :key="quiz.id" class="quiz-item">
         <h4>{{ index + 1 }}. {{ quiz.quizTitle }}</h4>
         <p class="answer">답: {{ quiz.answer }}</p>
       </div>
@@ -43,7 +39,7 @@ const close = () => {
     let currentReward = localStorage.getItem('point');
     currentReward = currentReward ? parseInt(currentReward) : 0;
     localStorage.setItem('point', currentReward + quizzes.data.reward);
-    alert('보상을 받았습니다.');
+    alert(quizzes.data.reward + '포인트를 받았습니다.');
   }
   router.push('/');
 };

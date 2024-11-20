@@ -41,10 +41,19 @@ onMounted(async () => {
   script.onload = async () => {
     // 네이버 지도 생성
     map.value = new naver.maps.Map('map', {
-      center: new naver.maps.LatLng(37.5665, 126.978),
+      center: new naver.maps.LatLng(gpsStore.latitude, gpsStore.longitude),
       zoom: 19,
       minZoom: 15, // 최소 줌 레벨
       mapTypeControl: true,
+    });
+    // 마커 첫 위치
+    const userLatLng = new naver.maps.LatLng(
+      gpsStore.latitude,
+      gpsStore.longitude
+    );
+    userMarker.value = new naver.maps.Marker({
+      position: userLatLng,
+      map: map.value,
     });
     // 중심위치로 이동하는 컨트롤 버튼
     naver.maps.Event.once(map.value, 'init', function () {
@@ -74,7 +83,7 @@ onMounted(async () => {
     watch(
       () => buttonState.value, // buttonState의 변화를 감지
       (newState) => {
-        if (newState) {
+        if (buttonState.value) {
           // 실시간 위치 추적 및 지도 중심 이동
           watch(
             [() => gpsStore.latitude, () => gpsStore.longitude],
@@ -104,7 +113,7 @@ onMounted(async () => {
             }
           );
         } else {
-          // 실시간 추적이 꺼졌을 때: 처음 한 번만 지도 중심 설정
+          // 실시간 추적이 꺼졌을 때
           watch(
             [() => gpsStore.latitude, () => gpsStore.longitude],
             ([lat, lng]) => {
@@ -143,7 +152,10 @@ onMounted(async () => {
     //===================================================================
 
     naver.maps.Event.addListener(map.value, 'idle', () => {
-      buttonState.value = false;
+      if (buttonState.value) {
+        buttonState.value = false; // 버튼 상태를 false로 변경
+        console.log('buttonState가 false로 변경되었습니다.');
+      }
       const center = map.value.getCenter();
       mapStore.setLat(center.lat());
       mapStore.setLon(center.lng());

@@ -19,7 +19,7 @@ export const useMapStore = defineStore('map', {
     },
     // store 정보 api 불러오기
     async getApi() {
-      const url = `/api/v2/map?lat=${this.lat}&lon=${this.lon}&radius=${this.radius}`;
+      const url = `https://zango.site/api/v2/map?lat=${this.lat}&lon=${this.lon}&radius=${this.radius}`;
       try {
         const response = await axios.get(url);
         if (response.status === 200 && response.data.data.length > 0) {

@@ -97,7 +97,7 @@ const goToNextQuiz = () => {
 
 // 결과 보기 함수
 const showResults = async () => {
-  const result = await axios.post('/api/dailyQuiz/result', {
+  const result = await axios.post('https://zango.site/api/dailyQuiz/result', {
     groupId: quizGroupId,
     answer: selectedAnswers.value,
   });

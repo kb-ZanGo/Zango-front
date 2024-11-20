@@ -57,7 +57,7 @@ const router = createRouter({
             component: GroupBuy,
         },
         {
-            path: '/feedback',
+            path: '/api/boards/feedback',
             name: 'FeedBack',
             component: FeedBack,
         },
@@ -72,13 +72,13 @@ const router = createRouter({
             component: QuizResult,
         },
         {
-            path: '/feedback/detail/:boardId',
+            path: '/api/boards/feedback/:boardId',
             name: 'FeedBackDetail',
             component: FeedBackDetail,
             props: true,
         },
         {
-            path: '/honeytip/detail/:boardId',
+            path: '/api/boards/honeytip/:boardId',
             name: 'HoneyTipDetail',
             component: HoneyTipDetail,
             props: true,

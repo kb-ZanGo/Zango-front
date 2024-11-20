@@ -59,7 +59,10 @@ onMounted(async () => {
         'click',
         function () {
           map.value.setZoom(18);
-          const userLatLng = new naver.maps.LatLng(gpsStore.lat, gpsStore.lng);
+          const userLatLng = new naver.maps.LatLng(
+            gpsStore.latitude,
+            gpsStore.longitude
+          );
           map.value.setCenter(userLatLng);
           buttonState.value = true;
           console.log('true');
@@ -107,12 +110,6 @@ onMounted(async () => {
             ([lat, lng]) => {
               if (lat && lng) {
                 const userLatLng = new naver.maps.LatLng(lat, lng);
-                // 처음 한 번만 지도의 중심을 설정
-                if (!isMapCentered) {
-                  map.value.setCenter(userLatLng);
-                  isMapCentered = true; // 한 번 호출 후 true로 설정
-                }
-
                 // 사용자 위치 마커가 없으면 새로 생성, 있으면 위치 업데이트
                 if (!userMarker.value) {
                   userMarker.value = new naver.maps.Marker({

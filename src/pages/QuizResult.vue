@@ -11,18 +11,15 @@
     </div>
     <!-- 퀴즈 항목 리스트 -->
     <div class="quiz-list">
-      <div
-        v-for="(quiz, index) in quizzes.data.results"
-        :key="quiz.id"
-        class="quiz-item"
-      >
+      <div v-for="(quiz, index) in quizzes.data.results" :key="quiz.id" class="quiz-item">
         <h4>{{ index + 1 }}. {{ quiz.quizTitle }}</h4>
         <p class="answer">답: {{ quiz.answer }}</p>
       </div>
+      <div style="display: flex; margin-top: 5%">
+        <button class="close-button" @click="close">확인</button>
+      </div>
     </div>
-    <div style="display: flex; margin-top: 5%">
-      <button class="close-button" @click="close">확인</button>
-    </div>
+
   </div>
 </template>
 
@@ -43,7 +40,7 @@ const close = () => {
     let currentReward = localStorage.getItem('point');
     currentReward = currentReward ? parseInt(currentReward) : 0;
     localStorage.setItem('point', currentReward + quizzes.data.reward);
-    alert('보상을 받았습니다.');
+    alert(quizzes.data.reward + '포인트를 받았습니다.');
   }
   router.push('/');
 };
@@ -52,6 +49,7 @@ const close = () => {
 <style scoped>
 .container {
   width: 100%;
+  height: 110vh;
   max-width: 500px;
   margin: auto;
   font-family: Arial, sans-serif;
@@ -100,7 +98,7 @@ const close = () => {
 }
 
 .quiz-item {
-  background: #f9f9f9;
+  border: 1px solid #f6c27a;
   padding: 15px;
   border-radius: 8px;
   margin-bottom: 15px;

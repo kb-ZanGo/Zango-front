@@ -137,15 +137,13 @@ onMounted(async () => {
     //===================================================================
 
     naver.maps.Event.addListener(map.value, 'idle', () => {
-      if (buttonState.value) {
-        // buttonState.value.value = false; // 버튼 상태를 false로 변경
-        // console.log(buttonState.value);
-      }
       const center = map.value.getCenter();
       mapStore.setLat(center.lat());
       mapStore.setLon(center.lng());
       mapStore.getApi();
+      mapStore.getCoalitionApi();
       mapStore.loadStoreMarkers(map.value, showLocationInfo); // 첫 화면 마커 로드
+      mapStore.loadCoalitionMarkers(map.value, showLocationInfo);
     });
   };
 });
@@ -173,19 +171,5 @@ const closeModal = () => {
 #map {
   width: 100%;
   height: 90vh;
-}
-#locationBtn {
-  width: 70px;
-  height: 70px;
-  background-size: cover;
-  cursor: pointer;
-}
-
-#locationBtn.location-off {
-  background-image: url('/images/locationBtn.png');
-}
-
-#locationBtn.location-on {
-  background-image: url('/images/locationBtnOn.png');
 }
 </style>

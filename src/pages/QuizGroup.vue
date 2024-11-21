@@ -1,5 +1,7 @@
 <template>
-  <div v-if="data.length == 0">퀴즈가 없는데용?</div>
+  <div v-if="isLoading" class="spinner-container">
+    <div class="spinner"></div>
+  </div>
   <div v-else class="quiz-container">
     <div class="image-container">
       <img v-if="currentQuiz.imageUrl" :src="currentQuiz.imageUrl" />
@@ -29,8 +31,7 @@
           <span class="title">KB포인트</span>
           <span class="points">
             <img style="width: 30px" src="@/assets/icons/point.png" />
-            {{ currentQuiz.reward }}</span
-          >
+            {{ currentQuiz.reward }}</span>
         </div>
         <div class="reward-item">
           <i class="fa-regular fa-calendar icon"></i>
@@ -51,14 +52,19 @@
 
     <!-- indicator -->
     <div class="indicator-container">
-      <div
-        v-for="(item, index) in data.length"
-        :key="index"
-        :class="['indicator', { active: currentIndex === index }]"
-      ></div>
+      <div v-for="(item, index) in data.length" :key="index" :class="['indicator', { active: currentIndex === index }]">
+      </div>
     </div>
 
     <button class="participate-button" @click="goToQuiz">참여하기</button>
+
+    <!-- 회색 선 추가 -->
+
+    <!-- indicator -->
+    <div class="indicator-container">
+      <div v-for="(item, index) in data.length" :key="index" :class="['indicator', { active: currentIndex === index }]">
+      </div>
+    </div>
   </div>
 </template>
 
@@ -68,6 +74,7 @@ import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
+const isLoading = ref(true);
 
 const data = ref([]);
 const currentIndex = ref(0);
@@ -82,8 +89,10 @@ const nextQuiz = () => {
 
 onMounted(async () => {
   try {
+    isLoading.value = true;
     const response = await axios.get('https://zango.site/api/dailyQuiz');
     data.value = response.data;
+    isLoading.value = false; // 데이터 로드 완료 후 로딩 상태를 false로 설정
     console.log(data.value);
   } catch (error) {
     console.error('데이터 로드 에러:', error);
@@ -279,5 +288,33 @@ const goToQuiz = () => {
   height: 100%;
   object-fit: cover;
   /* 비율 유지하며 div에 꽉 차게 */
+}
+
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.spinner {
+  border: 16px solid #f3f3f3;
+  /* Light grey */
+  border-top: 16px solid #F8C470;
+  /* Blue */
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 </style>

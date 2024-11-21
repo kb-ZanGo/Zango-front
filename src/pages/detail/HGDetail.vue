@@ -78,8 +78,8 @@ onMounted(fetchData);
         {{ board.content }}
       </p>
       <div class="interaction">
-        <div class="like">👍{{ board.likeCnt }}</div>
-        <div class="comment">💬{{ board.commentCnt }}</div>
+        <div class="like"></div>
+        <div class="comment"></div>
       </div>
     </div>
 

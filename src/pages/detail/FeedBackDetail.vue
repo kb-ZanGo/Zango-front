@@ -296,12 +296,12 @@ onMounted(() => {
 
     <div class="interaction">
       <div class="like">
-        <span>👍</span>
-        <span>좋아요</span>
+        <span></span>
+        <span></span>
       </div>
       <div class="comment">
-        <span>💭</span>
-        <span>댓글</span>
+        <span></span>
+        <span></span>
       </div>
     </div>
 

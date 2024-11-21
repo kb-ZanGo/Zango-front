@@ -27,11 +27,39 @@
     </button>
   </div>
   <div class="content">
-    <textarea class="input" />
+    <textarea
+      v-model="content"
+      class="input"
+      placeholder="내용을 입력해주세요."
+      @input="updateContent"
+    ></textarea>
   </div>
 </template>
 
-<script setup></script>
+<script>
+export default {
+  name: 'GroupBuy3',
+  props: {
+    currentStep: {
+      type: Number,
+      required: true,
+    },
+  },
+  data() {
+    return {
+      content: '',
+    };
+  },
+  methods: {
+    updateContent() {
+      console.log('내용 업데이트:', this.content); // 데이터 확인용
+      this.$emit('update-content', {
+        content: this.content,
+      });
+    },
+  },
+};
+</script>
 
 <style scoped>
 .title {

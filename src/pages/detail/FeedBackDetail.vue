@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
 import FullCalendar from '@fullcalendar/vue3';
 import dayGridPlugin from '@fullcalendar/daygrid';
@@ -16,6 +16,7 @@ const incomeMon = ref('');
 const outcomeMon = ref('');
 const incomeDay = ref('');
 const outcomeDay = ref('');
+const router = useRouter();
 const route = useRoute();
 const boardId = route.params.boardId;
 const feedbackData = ref(null);
@@ -154,15 +155,32 @@ const calendarOptions = ref({
     },
 });
 
+const goBack = () => {
+  router.push({ name: 'zzanda' });
+};
+
 onMounted(fetchData);
 </script>
 
 <template>
-    <div class="head">
-        <div class="close">
-            <button>
-                <i class="fa-solid fa-chevron-left"></i>
-            </button>
+<div class="head">
+    <div class="close">
+      <button @click="goBack">
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
+    </div>
+    <div class="head-container">짠내나는 다이어리</div>
+  </div>
+
+  <div class="container">
+    <div class="profile">
+      <div class="profile-info">
+        <div class="profile-left">
+          <img src="@/assets/icons/profile-image.png" class="profile-img" />
+          <div class="user-info">
+            <div class="username">{{ board.username }}</div>
+            <div class="post-time">{{ formattedDate }}</div>
+          </div>
         </div>
         <div class="head-container">짠내나는 다이어리</div>
     </div>

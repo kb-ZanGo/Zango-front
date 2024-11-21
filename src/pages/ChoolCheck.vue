@@ -1,5 +1,10 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
+
+const count = ref(0);
+const today = ref(0);
+const sum = ref(0);
+const isAttend = ref(false);
 
 // 현재 달의 날짜를 계산하는 함수
 const getDaysInMonth = (year, month) => {
@@ -39,11 +44,42 @@ const checkAttendance = (day) => {
       return Math.floor(Math.random() * 5) + 26; // 5% 확률로 26-30P
     };
 
+    let currentReward = localStorage.getItem('point');
+    let choolCheckPoint = localStorage.getItem('ccPoint');
+    let choolCheck = localStorage.getItem('cc');
+    let checked = localStorage.getItem('isAtt');
+
+    choolCheckPoint = choolCheckPoint ? parseInt(choolCheckPoint) : 0;
+    currentReward = currentReward ? parseInt(currentReward) : 0;
+    choolCheck = choolCheck ? parseInt(choolCheck) : 0;
+    checked = checked ? true : false;
+
     const points = weightedRandom();
     attendancePoints.value[day.date.toDateString()] = points;
+
+    localStorage.setItem('cc', choolCheck + 1);
+    localStorage.setItem('ccPoint', points);
+    localStorage.setItem('point', currentReward + points);
+    localStorage.setItem('isAtt', true);
     alert(`${points}포인트가 지급되었습니다!`);
+
+    isAttend.value = true; // 출석 상태 갱신
+    today.value = points; // 오늘 포인트 갱신
+    count.value = choolCheck + 1; // 출석 횟수 갱신
+    sum.value = currentReward + points;
   }
 };
+
+onMounted(() => {
+  const storedPoints = localStorage.getItem('point');
+  const todayPoints = localStorage.getItem('ccPoint');
+  const isCC = localStorage.getItem('cc');
+  const todayCC = localStorage.getItem('isAtt');
+  sum.value = storedPoints ? parseInt(storedPoints) : 0;
+  today.value = todayPoints ? parseInt(todayPoints) : 0;
+  count.value = isCC ? parseInt(isCC) : 0;
+  isAttend.value = todayCC ? true : false;
+});
 </script>
 
 <template>
@@ -61,16 +97,16 @@ const checkAttendance = (day) => {
         <div class="points">
           <div class="count">
             <span class="mini-title">용돈 받은 횟수</span>
-            <span class="mini-content">1/30</span>
+            <span class="mini-content">{{ count }}/30</span>
           </div>
           <div class="got-points">
             <span class="mini-title">내가 받은 스타포인트</span>
-            <span class="mini-content">10P</span>
+            <span class="mini-content">{{ today }}</span>
           </div>
           <hr />
           <div class="my-points">
             <span class="mini-title">보유중인 스타포인트</span>
-            <span class="mini-content">10P</span>
+            <span class="mini-content">{{ sum }} P</span>
           </div>
         </div>
       </div>
@@ -103,13 +139,13 @@ const checkAttendance = (day) => {
               ]"
             >
               <img
-                v-if="day.isToday && !day.points"
+                v-if="day.isToday && !day.points && !isAttend"
                 src="@/assets/icons/point.png"
                 @click="checkAttendance(day)"
                 class="check-img"
                 alt="출석체크"
               />
-              <div v-if="day.points" class="stamp-container">
+              <div v-if="isAttend && day.isToday" class="stamp-container">
                 <img src="@/assets/icons/stamp.png" class="stamp-img" alt="출석완료" />
                 <span class="stamp-points"></span>
               </div>

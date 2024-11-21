@@ -5,7 +5,7 @@ import axios from 'axios';
 import FullCalendar from '@fullcalendar/vue3';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interaction from '@fullcalendar/interaction';
-
+import Comment from '../side/Comment.vue';
 
 const events = ref([]);
 const board = ref({});
@@ -34,10 +34,13 @@ const fetchData = async () => {
 
     formattedDate.value = formatDate(regiDate.value);
 
+    const currentDate = ref(new Date());
+    const currentMonth = currentDate.value.getMonth() + 1; // 0부터 시작
     ioCnts.forEach((item) => {
-      const formattedDate = `${item.date.slice(0, 4)}-${item.date.slice(4, 6)}-${item.date.slice(
+      const formattedDate = `${item.date.slice(0, 4)}-${item.date.slice(
+        4,
         6
-      )}`;
+      )}-${item.date.slice(6)}`;
 
       // incomeCnt 이벤트 추가
       if (item.incomeCnt >= 0) {
@@ -80,16 +83,22 @@ function formatDate(regiDate) {
 // 클릭한 날짜의 데이터를 가져오는 함수
 const fetchTransactions = async (selectedDate) => {
   try {
-    const response = await axios.get(`/api/boards/feedback/${boardId}/${selectedDate}`);
+    const response = await axios.get(
+      `/api/boards/feedback/${boardId}/${selectedDate}`
+    );
     console.log(response.data);
     incomeDay.value = response.data.incomeDateSum;
     outcomeDay.value = response.data.outcomeDateSum;
 
     transactions.value = response.data.transactions.map((item) => {
-      const formattedDate = `${item.trDay.slice(0, 4)}.${item.trDay.slice(4, 6)}.${item.trDay.slice(
+      const formattedDate = `${item.trDay.slice(0, 4)}.${item.trDay.slice(
+        4,
         6
-      )}
-        ${item.trTime.slice(0, 2)}:${item.trTime.slice(2, 4)}:${item.trTime.slice(4)}`;
+      )}.${item.trDay.slice(6)}
+        ${item.trTime.slice(0, 2)}:${item.trTime.slice(
+        2,
+        4
+      )}:${item.trTime.slice(4)}`;
       const transactionType = item.trType === 1 ? '입금' : '출금';
       const formattedAmount = `${transactionType} ${item.amount.toLocaleString()}원`;
 
@@ -129,7 +138,9 @@ const calendarOptions = ref({
     };
 
     return {
-      html: `<span style="color: ${colors[arg.text] || 'black'};">${arg.text}</span>`,
+      html: `<span style="color: ${colors[arg.text] || 'black'};">${
+        arg.text
+      }</span>`,
     };
   },
   dayCellContent: (arg) => {
@@ -200,26 +211,45 @@ onMounted(fetchData);
     <div v-if="incomeDay != 0 || outcomeDay != 0" class="whenClick">
       <div class="day-sum">
         <div class="today">
-          {{ formattedDate.slice(0, 2) }}월 {{ formattedDate.slice(3, 5) }}일 거래내역
+          {{ formattedDate.slice(0, 2) }}월 {{ formattedDate.slice(3, 5) }}일
+          거래내역
         </div>
         <div class="in">
           <span class="inSumTitle">입금 총액</span>
-          <span class="inSum"> {{ incomeDay.toLocaleString() }} 원 </span>
+          <span class="inSum">{{ incomeDay.toLocaleString() }} 원</span>
         </div>
         <div class="out">
           <span class="outSumTitle">출금 총액</span>
-          <span class="outSum"> {{ outcomeDay.toLocaleString() }} 원 </span>
+          <span class="outSum">{{ outcomeDay.toLocaleString() }} 원</span>
         </div>
       </div>
-      <div v-for="(transaction, index) in transactions" :key="index" class="transaction">
+
+      <div
+        v-for="(transaction, index) in transactions"
+        :key="index"
+        class="transaction"
+      >
         <div class="date">{{ transaction.date }}</div>
         <div class="name">{{ transaction.name }}</div>
-        <div class="amount" :class="transaction.typeClass">{{ transaction.amount }}</div>
+        <div class="amount" :class="transaction.typeClass">
+          {{ transaction.amount }}
+        </div>
       </div>
     </div>
+
     <div class="interaction">
-      <div class="like">👍{{ board.like_cnt }}</div>
-      <div class="comment">💬{{ board.comment_cnt }}</div>
+      <div class="like">
+        <span>👍</span>
+        <span>좋아요</span>
+      </div>
+      <div class="comment">
+        <span>💭</span>
+        <span>댓글</span>
+      </div>
+    </div>
+
+    <div class="comment-section">
+      <Comment :boardId="boardId" />
     </div>
   </div>
 </template>
@@ -399,6 +429,8 @@ onMounted(fetchData);
   gap: 20px;
   padding-top: 15px;
   padding-bottom: 15px;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 20px;
 }
 
 .like,
@@ -407,5 +439,10 @@ onMounted(fetchData);
   align-items: center;
   gap: 5px;
   color: #666;
+}
+
+.comment-section {
+  margin-top: 20px;
+  padding: 0 10px;
 }
 </style>

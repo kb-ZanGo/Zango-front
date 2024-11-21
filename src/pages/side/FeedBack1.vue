@@ -9,6 +9,7 @@
                 id="userId"
                 type="text"
                 placeholder="id를 입력해주세요."
+                :disabled="isLoading"
             />
             <input
                 v-model="password"
@@ -16,6 +17,7 @@
                 id="password"
                 type="password"
                 placeholder="비밀번호를 입력해주세요."
+                :disabled="isLoading"
             />
             <input
                 v-model="accountNumber"
@@ -23,7 +25,15 @@
                 id="accountNumber"
                 type="text"
                 placeholder="계좌번호를 입력해주세요."
+                :disabled="isLoading"
             />
+        </div>
+        <div v-if="isLoading" class="loading-overlay">
+            <div class="loading-content">
+                <div class="loading-spinner"></div>
+                <p class="loading-text">거래내역 연동중입니다...</p>
+                <p class="loading-subtext">잠시만 기다려주세요</p>
+            </div>
         </div>
     </template>
     <template v-else>
@@ -56,13 +66,18 @@ const isFormValid = computed(() => {
     );
 });
 
-const emit = defineEmits(['update:isVerified', 'update:isFormValid']);
+const emit = defineEmits([
+    'update:isVerified',
+    'update:isFormValid',
+    'update:isLoading',
+]);
 
 watch([userId, password, accountNumber], () => {
     emit('update:isFormValid', isFormValid.value);
 });
 
 const verifyAccount = async () => {
+    emit('update:isLoading', true);
     try {
         const jsonData = {
             userId: userId.value,
@@ -89,7 +104,9 @@ const verifyAccount = async () => {
         }
     } catch (error) {
         console.error('거래내역 연동 실패:', error);
-        // 에러 처리 로직 추가 가능
+        alert('거래내역 연동에 실패했습니다. 다시 시도해주세요.');
+    } finally {
+        emit('update:isLoading', false);
     }
 };
 
@@ -159,5 +176,64 @@ defineExpose({ verifyAccount });
     color: #000000;
     margin-top: 30px;
     font-size: 1.4rem;
+}
+
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 99999;
+}
+
+.loading-content {
+    background-color: white;
+    padding: 30px 50px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: relative;
+    z-index: 100000;
+}
+
+.loading-spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #f5bb65;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+.loading-text {
+    color: #333;
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.loading-subtext {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.input:disabled {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
 }
 </style>

@@ -128,7 +128,7 @@
             </div>
         </div>
         <div class="feedback">
-            <h4>거래내역 피드백</h4>
+            <h4>소비습관 피드백</h4>
             <div class="feedback-list">
                 <div
                     v-for="item in currentPageItems"

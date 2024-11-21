@@ -45,6 +45,11 @@ const props = defineProps({
         required: false,
         default: false,
     },
+    isLoading: {
+        type: Boolean,
+        required: false,
+        default: false,
+    },
 });
 
 const emit = defineEmits(['prev', 'next', 'complete', 'verify']);
@@ -106,5 +111,35 @@ const handleClick = () => {
     cursor: pointer;
     font-size: 16px;
     width: 47%;
+}
+
+.verify-button {
+    padding: 12px 20px 8px 20px;
+    border-radius: 5px;
+    border: none;
+    background-color: #f5bb65;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+    width: 47%;
+}
+
+.verify-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.fa-spinner {
+    margin-right: 5px;
 }
 </style>

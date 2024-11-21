@@ -6,6 +6,7 @@
             :currentStep="currentStep"
             v-model:isVerified="isVerified"
             v-model:isFormValid="isFormValid"
+            v-model:isLoading="isLoading"
             @update:transactions="updateTransactions"
             ref="feedback1Ref"
         />
@@ -25,6 +26,7 @@
         :isVerified="isVerified"
         :isFormValid="isFormValid"
         :isFeedback="true"
+        :isLoading="isLoading"
         @prev="prev"
         @next="next"
         @complete="complete"
@@ -50,6 +52,7 @@ const feedback1Ref = ref(null);
 const transactions = ref(null);
 const title = ref('');
 const content = ref('');
+const isLoading = ref(false);
 
 const prev = () => {
     if (currentStep.value > 1) {
@@ -88,11 +91,12 @@ const complete = async () => {
             },
         });
 
+        alert('게시물이 성공적으로 작성되었습니다.');
         router.push({ name: 'zzanda' });
         currentStep.value = 1;
     } catch (error) {
         console.error('게시물 작성 실패:', error);
-        // 에러 처리 로직 추가 가능
+        alert('게시물 작성에 실패했습니다.');
     }
 };
 

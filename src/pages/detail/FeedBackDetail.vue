@@ -87,24 +87,10 @@ function formatDate(regiDate) {
 // 클릭한 날짜의 데이터를 가져오는 함수
 const fetchTransactions = async (selectedDate) => {
   try {
-    const response = await axios.get(
-      `https://zango.site/api/boards/feedback/${boardId}/${selectedDate}`
-    );
+    const response = await axios.get(`/api/boards/feedback/${boardId}/${selectedDate}`);
     console.log(response.data);
     incomeDay.value = response.data.incomeDateSum;
     outcomeDay.value = response.data.outcomeDateSum;
-    try {
-        const response = await axios.get(
-            `/api/boards/feedback/${boardId}/${selectedDate}`
-        );
-
-        // selectedDate(yyyymmdd)에서 월과 일만 추출하여 포맷팅
-        const month = selectedDate.slice(4, 6);
-        const day = selectedDate.slice(6, 8);
-        formattedDate.value = `${month}/${day}`;
-
-        incomeDay.value = response.data.incomeDateSum;
-        outcomeDay.value = response.data.outcomeDateSum;
 
     transactions.value = response.data.transactions.map((item) => {
       const formattedDate = `${item.trDay.slice(0, 4)}.${item.trDay.slice(4, 6)}.${item.trDay.slice(

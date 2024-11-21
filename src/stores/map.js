@@ -135,7 +135,7 @@ export const useMapStore = defineStore('map', {
           );
 
           if (!existingMarker) {
-            let iconUrl = '/images/default.png'; // 기본 아이콘
+            let iconUrl = '/images/gs.png'; // 기본 아이콘
             switch (type) {
               case 'gs':
                 iconUrl = '/images/gs.png';

@@ -81,7 +81,7 @@ const complete = async () => {
       },
     };
 
-    await axios.post('http://zango.site/api/boards/feedback', requestData, {
+    await axios.post('https//zango.site/api/boards/feedback', requestData, {
       headers: {
         'Content-Type': 'application/json',
       },

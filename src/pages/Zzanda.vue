@@ -280,7 +280,7 @@ export default {
     },
     async fetchFeedbackList() {
       try {
-        const response = await axios.get('/api/boards/feedback/list');
+        const response = await axios.get('https://zango.site/api/boards/feedback/list');
         this.feedbackList = response.data;
       } catch (error) {
         console.error('피드백 목록 조회 실패:', error);
@@ -293,7 +293,7 @@ export default {
     },
     async fetchPopularPosts() {
       try {
-        const response = await axios.get('/api/boards/honeytip/popular');
+        const response = await axios.get('https://zango.site/api/boards/honeytip/popular');
         this.popularPosts = response.data; // 데이터 복제 제거
       } catch (error) {
         console.error('인기 게시글 조회 실패:', error);

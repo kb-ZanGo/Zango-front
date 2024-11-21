@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://zango.site/api/boards/honeytip';
+const BASE_URL = 'https://zango.site/api/boards/honeytip';
 
 const api = axios.create({
   baseURL: BASE_URL,

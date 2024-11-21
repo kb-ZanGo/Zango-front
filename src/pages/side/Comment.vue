@@ -30,15 +30,12 @@
                         >
                             수정
                         </button>
-                        <div class="action-group">
-                            <span class="likes">👍 {{ comment.likeCnt }}</span>
-                            <button
-                                class="delete-btn"
-                                @click="deleteComment(comment.commentId)"
-                            >
-                                ✕
-                            </button>
-                        </div>
+                        <button
+                            class="delete-btn"
+                            @click="deleteComment(comment.commentId)"
+                        >
+                            ✕
+                        </button>
                     </div>
                 </div>
                 <div v-if="!comment.isEditing" class="comment-content">
@@ -68,6 +65,7 @@
                     >
                         답글 {{ comment.replies?.length || 0 }}개
                     </button>
+                    <span class="likes"> 👍 {{ comment.likeCnt }} </span>
                 </div>
                 <div v-if="comment.showReplies" class="replies-section">
                     <!-- 대댓글 목록 -->
@@ -86,6 +84,13 @@
                                         formatDate(reply.regiDate)
                                     }}</span>
                                     <button
+                                        class="edit-btn"
+                                        @click="startEdit(reply)"
+                                        v-if="!reply.isEditing"
+                                    >
+                                        수정
+                                    </button>
+                                    <button
                                         class="delete-btn"
                                         @click="deleteComment(reply.commentId)"
                                     >
@@ -93,7 +98,29 @@
                                     </button>
                                 </div>
                             </div>
-                            <div class="reply-content">{{ reply.content }}</div>
+                            <div v-if="!reply.isEditing" class="reply-content">
+                                {{ reply.content }}
+                            </div>
+                            <div v-else class="reply-edit">
+                                <textarea
+                                    v-model="reply.editContent"
+                                    class="edit-textarea"
+                                ></textarea>
+                                <div class="edit-buttons">
+                                    <button
+                                        class="save-btn"
+                                        @click="updateComment(reply)"
+                                    >
+                                        저장
+                                    </button>
+                                    <button
+                                        class="cancel-btn"
+                                        @click="cancelEdit(reply)"
+                                    >
+                                        취소
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -308,18 +335,39 @@ onMounted(() => {
 }
 
 .comment-footer {
-    font-size: 12px;
-    color: #666;
+    margin-top: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .likes {
+    font-size: 13px;
+    color: #666;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-right: 8px;
+}
+
+.reply-button {
+    background-color: #f8f8f8;
+    border: 1px solid #ddd;
+    border-radius: 15px;
+    padding: 4px 12px;
+    font-size: 12px;
+    color: #666;
     cursor: pointer;
+}
+
+.reply-button:hover {
+    background-color: #f0f0f0;
 }
 
 .comment-actions {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
 }
 
 .delete-btn {
@@ -474,5 +522,38 @@ onMounted(() => {
 
 .reply-input button:hover {
     background-color: #f4a940;
+}
+
+.reply-edit {
+    margin: 10px 0;
+}
+
+.reply-edit .edit-textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    resize: vertical;
+    min-height: 40px;
+    margin-bottom: 8px;
+}
+
+.reply-edit .edit-buttons {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+.reply .edit-btn {
+    font-size: 12px;
+    color: #999;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0 5px;
+}
+
+.reply .edit-btn:hover {
+    color: #666;
 }
 </style>

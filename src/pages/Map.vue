@@ -92,6 +92,10 @@ const toggleCardList = () => {
 };
 
 onMounted(async () => {
+  if (localStorage.getItem !== 1) {
+    localStorage.setItem('username', 'j0');
+  }
+
   gpsStore.startWatchingLocation();
   // 네이버 지도 API 로드
   const script = document.createElement('script');

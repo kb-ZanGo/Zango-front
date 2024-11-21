@@ -2,12 +2,39 @@
   <div class="title">제목을 입력해주세요</div>
   <div class="subtitle">20자 이내로 작성해주세요</div>
   <div class="content">
-    <input class="input" type="text" placeholder="내용을 입력해주세요." />
+    <input
+      class="input"
+      type="text"
+      v-model="title"
+      placeholder="내용을 입력해주세요."
+      @input="updateTitle"
+    />
   </div>
 </template>
 
-<script setup></script>
-
+<script>
+export default {
+  name: 'GroupBuy1',
+  props: {
+    currentStep: {
+      type: Number,
+      required: true,
+    },
+  },
+  data() {
+    return {
+      title: '',
+    };
+  },
+  methods: {
+    updateTitle() {
+      this.$emit('update-title', {
+        title: this.title,
+      });
+    },
+  },
+};
+</script>
 <style scoped>
 .title {
   font-size: 1.5rem;

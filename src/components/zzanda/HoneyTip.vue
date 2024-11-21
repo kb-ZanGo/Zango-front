@@ -95,20 +95,20 @@ const complete = async () => {
     const honeyTipData = {
       title: title.value,
       content: content.value,
-      smallCategoryId: Number(smallCategoryId.value),
-      bigCategoryId: Number(bigCategoryId.value),
+      bigCategoryId: bigCategoryId.value,
+      smallCategoryId: smallCategoryId.value,
+      userId: 1,
     };
 
     console.log('전송할 데이터:', honeyTipData);
-    const result = await createHoneyTip(honeyTipData);
-    console.log('API 응답 결과:', result);
+    await createHoneyTip(honeyTipData);
 
     alert('꿀팁이 성공적으로 등록되었습니다!');
     router.push({ name: 'zzanda' });
     currentStep.value = 1;
   } catch (error) {
-    console.error('Error details:', error);
-    alert(error.response?.data || '게시글 등록에 실패했습니다. 다시 시도해주세요.');
+    console.error('Error:', error);
+    alert('게시글 등록에 실패했습니다.');
   }
 };
 </script>

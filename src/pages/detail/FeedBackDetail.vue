@@ -20,6 +20,9 @@ const router = useRouter();
 const route = useRoute();
 const boardId = route.params.boardId;
 const feedbackData = ref(null);
+const isEditing = ref(false);
+const editTitle = ref('');
+const editContent = ref('');
 
 // 데이터를 가져오는 함수
 const fetchData = async () => {
@@ -173,6 +176,35 @@ const deletePost = async () => {
     }
 };
 
+const startEdit = () => {
+    editTitle.value = board.value.title;
+    editContent.value = board.value.content;
+    isEditing.value = true;
+};
+
+const saveEdit = async () => {
+    if (!editTitle.value.trim() || !editContent.value.trim()) {
+        alert('제목과 내용을 모두 입력해주세요.');
+        return;
+    }
+
+    try {
+        const response = await axios.put(`/api/boards/feedback/${boardId}`, {
+            title: editTitle.value,
+            content: editContent.value,
+        });
+
+        // 수정된 데이터로 화면 업데이트
+        board.value.title = editTitle.value;
+        board.value.content = editContent.value;
+        isEditing.value = false;
+        alert('게시물이 수정되었습니다.');
+    } catch (error) {
+        console.error('게시물 수정 실패:', error);
+        alert('게시물 수정에 실패했습니다.');
+    }
+};
+
 onMounted(fetchData);
 </script>
 
@@ -191,16 +223,23 @@ onMounted(fetchData);
             <div class="profile-info">
                 <div class="profile-left">
                     <img
-                        src="@/assets/icons/profile-image.png"
+                        src="@/assets/icons/profile.png"
+                        alt="프로필 이미지"
                         class="profile-img"
                     />
                     <div class="user-info">
-                        <div class="username">{{ board.username }}</div>
-                        <div class="post-time">{{ formattedDate }}</div>
+                        <span class="username">{{ board.user?.nickname }}</span>
+                        <span class="post-time">{{ formattedDate }}</span>
                     </div>
                 </div>
-                <div class="delete">
-                    <button @click="deletePost">
+                <div class="action-buttons">
+                    <button class="edit" @click="startEdit" v-if="!isEditing">
+                        <i class="fa-solid fa-pen"></i>
+                    </button>
+                    <button class="edit" @click="saveEdit" v-if="isEditing">
+                        <i class="fa-solid fa-check"></i>
+                    </button>
+                    <button class="delete" @click="deletePost">
                         <i class="fa-solid fa-trash"></i>
                     </button>
                 </div>
@@ -208,10 +247,22 @@ onMounted(fetchData);
         </div>
 
         <div class="content">
-            <h2 class="content-title">{{ board.title }}</h2>
-            <p class="content-text">
-                {{ board.content }}
-            </p>
+            <div v-if="isEditing">
+                <input
+                    v-model="editTitle"
+                    class="edit-title"
+                    placeholder="제목을 입력하세요"
+                />
+                <textarea
+                    v-model="editContent"
+                    class="edit-content"
+                    placeholder="내용을 입력하세요"
+                ></textarea>
+            </div>
+            <div v-else>
+                <div class="content-title">{{ board.title }}</div>
+                <div class="content-text">{{ board.content }}</div>
+            </div>
         </div>
 
         <div class="month-sum">
@@ -472,12 +523,14 @@ onMounted(fetchData);
     padding: 0 10px;
 }
 
-.delete {
+.action-buttons {
     display: flex;
+    gap: 10px;
     align-items: center;
 }
 
-.delete button {
+.edit,
+.delete {
     border: none;
     background-color: transparent;
     color: #666;
@@ -485,7 +538,28 @@ onMounted(fetchData);
     padding: 5px;
 }
 
-.delete button:hover {
+.edit:hover {
     color: #f5bb65;
+}
+
+.edit-title {
+    width: 100%;
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.edit-content {
+    width: 100%;
+    height: 200px;
+    font-size: 14px;
+    line-height: 1.5;
+    padding: 10px;
+    border: 1px solid #000000;
+    border-radius: 10px;
+    resize: none;
 }
 </style>

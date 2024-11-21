@@ -11,6 +11,7 @@ export const useMapStore = defineStore('map', {
     radius: 5,
     coalitionApiData: '',
     coalitionMarkers: ref([]),
+    card: 1,
   }),
   actions: {
     setLat(lat) {
@@ -18,6 +19,9 @@ export const useMapStore = defineStore('map', {
     },
     setLon(lon) {
       this.lon = lon;
+    },
+    setCard(card) {
+      this.card = card;
     },
     // store 정보 api 불러오기
     async getApi() {
@@ -36,7 +40,7 @@ export const useMapStore = defineStore('map', {
     },
     // 제휴정보
     async getCoalitionApi() {
-      const url = `https://zango.site/api/coalition`;
+      const url = `https://zango.site/api/coalition/${this.card}`;
       try {
         const response = await axios.get(url);
         if (response.status === 200 && response.data.length > 0) {
@@ -47,6 +51,15 @@ export const useMapStore = defineStore('map', {
       } catch (error) {
         console.error('데이터를 가져오는 중 에러 발생:', error);
         this.apiData = []; // aptData 초기화
+      }
+    },
+    // 모든 제휴마커 삭제
+    clearCoalitionMarkers(map) {
+      if (this.coalitionMarkers && this.coalitionMarkers.length > 0) {
+        this.coalitionMarkers.forEach((marker) => {
+          marker.setMap(null); // 마커를 지도에서 제거
+        });
+        this.coalitionMarkers = []; // 마커 배열 초기화
       }
     },
     // 범위 밖 지점 마커 삭제
@@ -91,6 +104,7 @@ export const useMapStore = defineStore('map', {
             const markerOptions = {
               position: markerPosition,
               map: map,
+              zIndex: 100,
               icon: {
                 url: '/images/storeMarker1.png',
                 scaledSize: new naver.maps.Size(65, 65),
@@ -152,12 +166,16 @@ export const useMapStore = defineStore('map', {
               case 'cu':
                 iconUrl = '/images/cu.png';
                 break;
+              case 'out':
+                iconUrl = '/images/outback.png';
+                break;
               default:
                 console.error(`Unknown marker type: ${type}`);
             }
             const markerOptions = {
               position: markerPosition,
               map: map,
+              zIndex: 10,
               icon: {
                 url: iconUrl,
                 scaledSize: new naver.maps.Size(50, 50),

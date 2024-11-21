@@ -42,7 +42,7 @@ let stopTracking;
 
 onMounted(async () => {
   if (localStorage.getItem !== 1) {
-    localStorage.setItem('userId', 1);
+    localStorage.setItem('username', 'j0');
   }
 
   gpsStore.startWatchingLocation();

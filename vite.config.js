@@ -17,10 +17,6 @@ export default defineConfig({
         target: 'http://localhost:8080',
         changeOrigin: true,
       },
-      // '/api': {
-      //   target: 'https://zango.site',
-      //   changeOrigin: true,
-      // },
     },
   },
 });

@@ -1,7 +1,26 @@
 <template>
-  <div id="map"></div>
-  <!-- <Menu /> -->
+  <div id="map-container">
+    <div id="map"></div>
 
+    <!-- 지도 위에 버튼 -->
+    <img
+      src="/images/cardList.png"
+      class="toggle-card-list-btn"
+      @click="toggleCardList"
+    />
+
+    <!-- 카드 리스트 -->
+    <div class="card-list" v-show="showCardList">
+      <div
+        class="card"
+        v-for="(card, index) in cards"
+        :key="index"
+        @click="selectCard(card)"
+      >
+        <img :src="card.image" alt="card.name" class="card-image" />
+      </div>
+    </div>
+  </div>
   <CoalitionInfo
     v-if="showModal && isCoalitionType"
     :location="selectedLocation"
@@ -39,6 +58,38 @@ const locationBtn =
   '<img src="/images/centerOn.png" alt="Location Button" style="width: 80px; height: 80px;">';
 let isMapCentered = false;
 let stopTracking;
+const showCardList = ref(false);
+
+const cards = [
+  {
+    id: 1,
+    name: '첵첵 체크카드(마루는강쥐)',
+    image: '/images/maruCard.png',
+  },
+  {
+    id: 2,
+    name: '노리 체크카드',
+    image: '/images/noriCard.png',
+  },
+  {
+    id: 3,
+    name: '나라사랑체크카드',
+    image: '/images/naraCard.png',
+  },
+];
+// 카드 선택
+const selectCard = async (card) => {
+  mapStore.setCard(card.id);
+  mapStore.clearCoalitionMarkers(map.value);
+  await mapStore.getCoalitionApi();
+  mapStore.loadCoalitionMarkers(map.value, showLocationInfo);
+  showCardList.value = false;
+  console.log(`Selected card: ${card.name}, id: ${card.id}`);
+};
+// 카드 리스트 토글
+const toggleCardList = () => {
+  showCardList.value = !showCardList.value;
+};
 
 onMounted(async () => {
   gpsStore.startWatchingLocation();
@@ -149,6 +200,7 @@ onMounted(async () => {
       const center = map.value.getCenter();
       mapStore.setLat(center.lat());
       mapStore.setLon(center.lng());
+
       mapStore.getApi();
       mapStore.getCoalitionApi();
       mapStore.loadStoreMarkers(map.value, showLocationInfo); // 첫 화면 마커 로드
@@ -172,7 +224,7 @@ const showLocationInfo = (location) => {
 };
 
 const isCoalitionType = computed(() => {
-  return ['gs', 'coffee', 'cgv', 'olive', 'cu'].includes(
+  return ['gs', 'coffee', 'cgv', 'olive', 'cu', 'out'].includes(
     selectedLocation.value?.type
   );
 });
@@ -185,5 +237,37 @@ const closeModal = () => {
 #map {
   width: 100%;
   height: 90vh;
+}
+.toggle-card-list-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 10px;
+  width: 70px;
+  height: auto;
+}
+.card-list {
+  position: absolute;
+  top: 70px;
+  right: 10px;
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.card-image {
+  width: 170px;
+  height: 150px;
+  margin-right: 10px;
 }
 </style>

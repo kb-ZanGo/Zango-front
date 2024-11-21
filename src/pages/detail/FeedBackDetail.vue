@@ -87,7 +87,9 @@ function formatDate(regiDate) {
 // 클릭한 날짜의 데이터를 가져오는 함수
 const fetchTransactions = async (selectedDate) => {
   try {
-    const response = await axios.get(`/api/boards/feedback/${boardId}/${selectedDate}`);
+    const response = await axios.get(
+      `https://zango.site/api/boards/feedback/${boardId}/${selectedDate}`
+    );
     console.log(response.data);
     incomeDay.value = response.data.incomeDateSum;
     outcomeDay.value = response.data.outcomeDateSum;

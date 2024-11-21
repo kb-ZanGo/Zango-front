@@ -6,6 +6,7 @@ import FullCalendar from '@fullcalendar/vue3';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interaction from '@fullcalendar/interaction';
 
+
 const events = ref([]);
 const board = ref({});
 const formattedDate = ref('');
@@ -18,6 +19,7 @@ const outcomeDay = ref('');
 const router = useRouter();
 const route = useRoute();
 const boardId = route.params.boardId;
+const feedbackData = ref(null);
 
 // 데이터를 가져오는 함수
 const fetchData = async () => {

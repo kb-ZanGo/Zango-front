@@ -23,6 +23,12 @@ const isInRange = ref(false);
 const selectedLocation = ref(null); // 선택된 마커 정보
 const map = ref();
 const userMarker = ref();
+const buttonState = ref(true);
+let isLocationBtnOn = false;
+const locationBtn =
+  '<img src="/images/centerOn.png" alt="Location Button" style="width: 80px; height: 80px;">';
+let isMapCentered = false;
+let stopTracking;
 
 onMounted(async () => {
   gpsStore.startWatchingLocation();
@@ -37,30 +43,90 @@ onMounted(async () => {
   script.onload = async () => {
     // 네이버 지도 생성
     map.value = new naver.maps.Map('map', {
-      center: new naver.maps.LatLng(37.5665, 126.978),
+      center: new naver.maps.LatLng(gpsStore.latitude, gpsStore.longitude),
       zoom: 19,
       minZoom: 15, // 최소 줌 레벨
+      mapTypeControl: true,
     });
-    // gps가 업데이트될 때마다 지도와 마커 위치를 업데이트
-    watch([() => gpsStore.latitude, () => gpsStore.longitude], ([lat, lng]) => {
-      if (lat && lng) {
-        const userLatLng = new naver.maps.LatLng(lat, lng);
-        // 사용자의 위치가 바뀔 때마다 지도 중심 이동
-        map.value.setCenter(userLatLng);
+    // 마커 첫 위치
+    const userLatLng = new naver.maps.LatLng(
+      gpsStore.latitude,
+      gpsStore.longitude
+    );
+    userMarker.value = new naver.maps.Marker({
+      position: userLatLng,
+      map: map.value,
+    });
+    // 중심위치로 이동하는 컨트롤 버튼
+    naver.maps.Event.once(map.value, 'init', function () {
+      // CustomControl 생성
+      const customControl = new naver.maps.CustomControl(locationBtn, {
+        position: naver.maps.Position.LEFT_BOTTOM,
+      });
+      customControl.setMap(map.value);
 
-        // 사용자 위치 마커가 없으면 새로 생성, 있으면 위치 업데이트
-        if (!userMarker.value) {
-          userMarker.value = new naver.maps.Marker({
-            position: userLatLng,
-            map: map.value,
-          });
-        } else {
-          userMarker.value.setPosition(userLatLng);
+      // 클릭 이벤트 추가
+      naver.maps.Event.addDOMListener(
+        customControl.getElement(),
+        'click',
+        function () {
+          isLocationBtnOn = !isLocationBtnOn; // 상태 토글
+
+          const button = customControl.getElement(); // 버튼 DOM 엘리먼트
+          button.innerHTML = isLocationBtnOn
+            ? `<img src="/images/center.png" alt="Location Button" style="width: 80px; height: 80px;">`
+            : `<img src="/images/centerOn.png" alt="Location Button" style="width: 80px; height: 80px;">`;
+          buttonState.value = !buttonState.value;
+          console.log(buttonState.value);
+          map.value.setZoom(19);
+          const userLatLng = new naver.maps.LatLng(
+            gpsStore.latitude,
+            gpsStore.longitude
+          );
+          map.value.setCenter(userLatLng);
         }
-        // 고정 마커와 실시간 마커 거리 비교 및 아이콘 변경
-        mapStore.updateStoreMarkersIcon(lat, lng, map.value, checkInRange);
-      }
+      );
     });
+
+    // buttonState.value가 true일때만 gps가 업데이트될 때마다 지도와 마커 위치를 업데이트(포켓몬고 모드)
+    watch(
+      () => buttonState.value, // buttonState.value의 변화를 감지
+      (newState) => {
+        if (stopTracking) stopTracking();
+        if (newState) {
+          // 실시간 위치 추적 및 지도 중심 이동
+          stopTracking = watch(
+            [() => gpsStore.latitude, () => gpsStore.longitude],
+            ([lat, lng]) => {
+              if (lat && lng) {
+                const userLatLng = new naver.maps.LatLng(lat, lng);
+                map.value.setCenter(userLatLng);
+
+                // 사용자 위치 마커가 없으면 새로 생성, 있으면 위치 업데이트
+                if (!userMarker.value) {
+                  userMarker.value = new naver.maps.Marker({
+                    position: userLatLng,
+                    map: map.value,
+                  });
+                } else {
+                  userMarker.value.setPosition(userLatLng);
+                }
+
+                // 고정 마커와 실시간 마커 거리 비교 및 아이콘 변경
+                mapStore.updateStoreMarkersIcon(
+                  lat,
+                  lng,
+                  map.value,
+                  checkInRange
+                );
+              }
+            }
+          );
+        } else {
+          console.log('실시간 추적이 비활성화되었습니다.');
+        }
+      }
+    );
     //===================================================================
     //테스트용 클릭 이벤트
     new naver.maps.Event.addListener(map.value, 'click', function (e) {
@@ -75,7 +141,9 @@ onMounted(async () => {
       mapStore.setLat(center.lat());
       mapStore.setLon(center.lng());
       mapStore.getApi();
+      mapStore.getCoalitionApi();
       mapStore.loadStoreMarkers(map.value, showLocationInfo); // 첫 화면 마커 로드
+      mapStore.loadCoalitionMarkers(map.value, showLocationInfo);
     });
   };
 });

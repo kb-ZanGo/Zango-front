@@ -9,6 +9,8 @@ export const useMapStore = defineStore('map', {
     lat: 37.548138,
     lon: 127.073397,
     radius: 5,
+    coalitionApiData: '',
+    coalitionMarkers: ref([]),
   }),
   actions: {
     setLat(lat) {
@@ -19,11 +21,26 @@ export const useMapStore = defineStore('map', {
     },
     // store 정보 api 불러오기
     async getApi() {
-      const url = `/api/v2/map?lat=${this.lat}&lon=${this.lon}&radius=${this.radius}`;
+      const url = `https://zango.site/api/v2/map?lat=${this.lat}&lon=${this.lon}&radius=${this.radius}`;
       try {
         const response = await axios.get(url);
         if (response.status === 200 && response.data.data.length > 0) {
           this.apiData = response.data.data; // 데이터를 상태에 저장
+        } else {
+          // console.log('else  ' + JSON.stringify(response.data.data));
+        }
+      } catch (error) {
+        console.error('데이터를 가져오는 중 에러 발생:', error);
+        this.apiData = []; // aptData 초기화
+      }
+    },
+    // 제휴정보
+    async getCoalitionApi() {
+      const url = `https://zango.site/api/coalition`;
+      try {
+        const response = await axios.get(url);
+        if (response.status === 200 && response.data.length > 0) {
+          this.coalitionApiData = response.data; // 데이터를 상태에 저장
         } else {
           // console.log('else  ' + JSON.stringify(response.data.data));
         }
@@ -83,6 +100,58 @@ export const useMapStore = defineStore('map', {
         }
       }
     },
+
+    // 지점 마커 생성
+    loadCoalitionMarkers(map, showLocationInfo) {
+      const bounds = map.getBounds(); // 현재 지도 범위 가져오기
+
+      // 범위 밖 마커 삭제 함수 호출
+      this.removeOutOfBoundsMarkers(bounds);
+
+      const markerIcons = {
+        GS: '/images/GS.png',
+        olive: '/images/olive.png',
+        coffee: '/images/star.png',
+        cgv: '/images/cgv.png',
+      };
+      // 현재 범위에 없는 새로운 마커만 추가
+      for (let i = 0; i < this.coalitionApiData.length; i++) {
+        const location = this.coalitionApiData[i];
+        const markerPosition = new naver.maps.LatLng(
+          location.lat,
+          location.lon
+        );
+        const type = location.type;
+
+        // 범위 내 마커만 추가
+        if (bounds.hasLatLng(markerPosition)) {
+          // 기존 마커가 이미 있으면 추가하지 않음
+          const existingMarker = this.coalitionMarkers.find((marker) =>
+            marker.getPosition().equals(markerPosition)
+          );
+          if (!existingMarker) {
+            const markerOptions = {
+              position: markerPosition,
+              map: map,
+              icon: {
+                url: markerIcons[type] || '/images/GS.png',
+                scaledSize: new naver.maps.Size(50, 50),
+                origin: new naver.maps.Point(0, 0),
+                anchor: new naver.maps.Point(34, 70),
+              },
+            };
+            const marker = new naver.maps.Marker(markerOptions);
+
+            // 마커 클릭 이벤트
+            new naver.maps.Event.addListener(marker, 'click', () => {
+              showLocationInfo(location);
+            });
+            // 새로운 마커는 배열에 추가
+            this.coalitionMarkers.push(marker);
+          }
+        }
+      }
+    },
     // 두 좌표 간 거리 계산 (Haversine 공식)
     getDistance(lat1, lon1, lat2, lon2) {
       const R = 6371e3; // 지구 반경 (미터)
@@ -110,8 +179,8 @@ export const useMapStore = defineStore('map', {
           markerPosition.lng()
         );
 
-        if (distance < 100) {
-          // 반경 100m 내일 때 애니메이션 추가
+        if (distance < 20) {
+          // 반경 20m 내 일때 애니메이션 추가
           marker.setAnimation(naver.maps.Animation.BOUNCE);
           isInRange = true;
         } else {

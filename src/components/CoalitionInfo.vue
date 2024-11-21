@@ -44,8 +44,6 @@ const getImageByType = (type) => {
       return '/images/cu.png';
     case 'out':
       return '/images/outback.png';
-    default:
-      return '/images/gs.png'; // 기본 이미지
   }
 };
 

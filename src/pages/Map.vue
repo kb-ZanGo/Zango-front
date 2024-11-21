@@ -41,11 +41,14 @@ let isMapCentered = false;
 let stopTracking;
 
 onMounted(async () => {
+  if (localStorage.getItem !== 1) {
+    localStorage.setItem('userId', 1);
+  }
+
   gpsStore.startWatchingLocation();
   // 네이버 지도 API 로드
   const script = document.createElement('script');
-  script.src =
-    'https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=rethfjjakr';
+  script.src = 'https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=rethfjjakr';
   script.async = true;
   script.defer = true;
   document.head.appendChild(script);
@@ -58,10 +61,7 @@ onMounted(async () => {
       minZoom: 15, // 최소 줌 레벨
     });
     // 마커 첫 위치
-    const userLatLng = new naver.maps.LatLng(
-      gpsStore.latitude,
-      gpsStore.longitude
-    );
+    const userLatLng = new naver.maps.LatLng(gpsStore.latitude, gpsStore.longitude);
     userMarker.value = new naver.maps.Marker({
       position: userLatLng,
       map: map.value,
@@ -75,26 +75,19 @@ onMounted(async () => {
       customControl.setMap(map.value);
 
       // 클릭 이벤트 추가
-      naver.maps.Event.addDOMListener(
-        customControl.getElement(),
-        'click',
-        function () {
-          isLocationBtnOn = !isLocationBtnOn; // 상태 토글
+      naver.maps.Event.addDOMListener(customControl.getElement(), 'click', function () {
+        isLocationBtnOn = !isLocationBtnOn; // 상태 토글
 
-          const button = customControl.getElement(); // 버튼 DOM 엘리먼트
-          button.innerHTML = isLocationBtnOn
-            ? `<img src="/images/center.png" alt="Location Button" style="width: 80px; height: 80px;">`
-            : `<img src="/images/centerOn.png" alt="Location Button" style="width: 80px; height: 80px;">`;
-          buttonState.value = !buttonState.value;
-          console.log(buttonState.value);
-          map.value.setZoom(19);
-          const userLatLng = new naver.maps.LatLng(
-            gpsStore.latitude,
-            gpsStore.longitude
-          );
-          map.value.setCenter(userLatLng);
-        }
-      );
+        const button = customControl.getElement(); // 버튼 DOM 엘리먼트
+        button.innerHTML = isLocationBtnOn
+          ? `<img src="/images/center.png" alt="Location Button" style="width: 80px; height: 80px;">`
+          : `<img src="/images/centerOn.png" alt="Location Button" style="width: 80px; height: 80px;">`;
+        buttonState.value = !buttonState.value;
+        console.log(buttonState.value);
+        map.value.setZoom(19);
+        const userLatLng = new naver.maps.LatLng(gpsStore.latitude, gpsStore.longitude);
+        map.value.setCenter(userLatLng);
+      });
     });
 
     // buttonState.value가 true일때만 gps가 업데이트될 때마다 지도와 마커 위치를 업데이트(포켓몬고 모드)
@@ -122,12 +115,7 @@ onMounted(async () => {
                 }
 
                 // 고정 마커와 실시간 마커 거리 비교 및 아이콘 변경
-                mapStore.updateStoreMarkersIcon(
-                  lat,
-                  lng,
-                  map.value,
-                  checkInRange
-                );
+                mapStore.updateStoreMarkersIcon(lat, lng, map.value, checkInRange);
               }
             }
           );
@@ -172,9 +160,7 @@ const showLocationInfo = (location) => {
 };
 
 const isCoalitionType = computed(() => {
-  return ['gs', 'coffee', 'cgv', 'olive', 'cu'].includes(
-    selectedLocation.value?.type
-  );
+  return ['gs', 'coffee', 'cgv', 'olive', 'cu'].includes(selectedLocation.value?.type);
 });
 // 모달 닫기
 const closeModal = () => {

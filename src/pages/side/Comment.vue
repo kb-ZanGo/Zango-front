@@ -65,7 +65,13 @@
                     >
                         답글 {{ comment.replies?.length || 0 }}개
                     </button>
-                    <span class="likes"> 👍 {{ comment.likeCnt }} </span>
+                    <button
+                        class="like-button"
+                        @click="toggleLike(comment)"
+                        :class="{ liked: comment.isLiked }"
+                    >
+                        👍 {{ comment.likeCnt }}
+                    </button>
                 </div>
                 <div v-if="comment.showReplies" class="replies-section">
                     <!-- 대댓글 목록 -->
@@ -160,8 +166,9 @@ const fetchComments = async () => {
             (a, b) => new Date(b.regiDate) - new Date(a.regiDate)
         );
 
-        // 각 댓글의 대댓글 수 조회
+        // 각 댓글의 대댓글 수 조회 및 좋아요 상태 초기화
         for (const comment of sortedComments) {
+            comment.isLiked = false; // 좋아요 상태 초기화
             try {
                 const repliesResponse = await axios.get(
                     `/api/comments/${comment.commentId}/replies`
@@ -175,7 +182,6 @@ const fetchComments = async () => {
                 comment.replies = [];
             }
         }
-
         comments.value = sortedComments;
     } catch (error) {
         console.error('댓글 조회 실패:', error);
@@ -269,6 +275,22 @@ const submitReply = async (comment) => {
         comment.newReply = '';
     } catch (error) {
         console.error('대댓글 작성 실패:', error);
+    }
+};
+
+// 좋아요 토글 함수 추가
+const toggleLike = async (comment) => {
+    try {
+        if (!comment.isLiked) {
+            await axios.post(`/api/comments/${comment.commentId}/like`);
+            comment.likeCnt++;
+        } else {
+            await axios.post(`/api/comments/${comment.commentId}/unlike`);
+            comment.likeCnt--;
+        }
+        comment.isLiked = !comment.isLiked;
+    } catch (error) {
+        console.error('좋아요 처리 실패:', error);
     }
 };
 
@@ -555,5 +577,26 @@ onMounted(() => {
 
 .reply .edit-btn:hover {
     color: #666;
+}
+
+.like-button {
+    background: none;
+    border: none;
+    color: #666;
+    cursor: pointer;
+    font-size: 13px;
+    padding: 4px 8px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.2s;
+}
+
+.like-button:hover {
+    color: #f5bb65;
+}
+
+.like-button.liked {
+    color: #f5bb65;
 }
 </style>

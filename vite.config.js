@@ -13,14 +13,14 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      //   '/api': {
-      //     target: 'http://localhost:8080',
-      //     changeOrigin: true,
-      //   },
       '/api': {
-        target: 'https://zango.site',
+        target: 'http://localhost:8080',
         changeOrigin: true,
       },
+      // '/api': {
+      //   target: 'https://zango.site',
+      //   changeOrigin: true,
+      // },
     },
   },
 });

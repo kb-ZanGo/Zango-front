@@ -19,7 +19,6 @@
             <span class="card-author">{{ card.username }}</span>
             <div class="card-stats">
               <span>👀 {{ card.viewCnt }}</span>
-              <span>👍 {{ card.likeCnt }}</span>
             </div>
           </div>
         </div>
@@ -35,7 +34,6 @@
             <span class="card-author">{{ card.username }}</span>
             <div class="card-stats">
               <span>👀 {{ card.viewCnt }}</span>
-              <span>👍 {{ card.likeCnt }}</span>
             </div>
           </div>
         </div>
@@ -62,7 +60,7 @@
               <th>세부카테고리</th>
               <th>제목</th>
               <th>작성자</th>
-              <th>좋아요</th>
+              <th>작성일</th>
             </tr>
           </thead>
           <tbody>
@@ -76,7 +74,11 @@
               <td>{{ tip.smallCategoryName }}</td>
               <td>{{ tip.title }}</td>
               <td>{{ tip.userName }}</td>
-              <td>{{ tip.likeCnt }}</td>
+              <td>
+                {{ tip.regiDate.slice(0, 4) }}.{{ tip.regiDate.slice(5, 7) }}.{{
+                  tip.regiDate.slice(8, 10)
+                }}
+              </td>
             </tr>
           </tbody>
         </table>
@@ -127,7 +129,7 @@
           @click="goToFeedBackDetail(item.feedBackId)"
         >
           <div class="feedback-title">{{ item.username }}</div>
-          <div class="feedback-likes">👍 {{ item.likeCnt }}</div>
+          <div class="feedback-likes"></div>
           <div class="feedback-username">{{ item.title }}</div>
           <div class="feedback-date">{{ item.regiDate }}</div>
         </div>
@@ -182,7 +184,7 @@ export default {
       categories: [
         { id: 1, name: '생활꿀팁' },
         { id: 2, name: '부업추천' },
-        { id: 3, name: '할인 및 이벤트' },
+        { id: 3, name: '할인 / 이벤트' },
         { id: 4, name: '여행꿀팁' },
         { id: 5, name: '재테크 팁' },
         { id: 6, name: '성공후기' },

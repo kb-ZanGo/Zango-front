@@ -1,8 +1,17 @@
 <template>
   <div id="map"></div>
   <!-- <Menu /> -->
+
+  <CoalitionInfo
+    v-if="showModal && isCoalitionType"
+    :location="selectedLocation"
+    :isInRange="isInRange"
+    @close="closeModal"
+  />
+
+  <!-- 그 외에는 StoreInfo 컴포넌트를 보여줌 -->
   <StoreInfo
-    v-if="showModal"
+    v-else-if="showModal"
     :location="selectedLocation"
     :isInRange="isInRange"
     @close="closeModal"
@@ -10,11 +19,12 @@
 </template>
 
 <script setup>
-import { onMounted, onBeforeUnmount, ref, watch } from 'vue';
+import { computed, onMounted, onBeforeUnmount, ref, watch } from 'vue';
 import { useMapStore } from '@/stores/map';
 import { useGpsStore } from '@/stores/gps';
 import Menu from '@/components/Menu.vue';
 import StoreInfo from '@/components/StoreInfo.vue';
+import CoalitionInfo from '@/components/CoalitionInfo.vue';
 
 const mapStore = useMapStore();
 const gpsStore = useGpsStore();
@@ -46,7 +56,6 @@ onMounted(async () => {
       center: new naver.maps.LatLng(gpsStore.latitude, gpsStore.longitude),
       zoom: 19,
       minZoom: 15, // 최소 줌 레벨
-      mapTypeControl: true,
     });
     // 마커 첫 위치
     const userLatLng = new naver.maps.LatLng(
@@ -162,6 +171,11 @@ const showLocationInfo = (location) => {
   showModal.value = true;
 };
 
+const isCoalitionType = computed(() => {
+  return ['gs', 'coffee', 'cgv', 'olive', 'cu'].includes(
+    selectedLocation.value?.type
+  );
+});
 // 모달 닫기
 const closeModal = () => {
   showModal.value = false;

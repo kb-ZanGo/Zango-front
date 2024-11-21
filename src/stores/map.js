@@ -49,13 +49,23 @@ export const useMapStore = defineStore('map', {
         this.apiData = []; // aptData 초기화
       }
     },
-    // 범위 밖 마커 삭제
+    // 범위 밖 지점 마커 삭제
     removeOutOfBoundsMarkers(bounds) {
       this.storeMarkers.forEach((marker, index) => {
         const markerPosition = marker.getPosition();
         if (!bounds.hasLatLng(markerPosition)) {
           marker.setMap(null); // 범위 밖의 마커는 지도에서 제거
           this.storeMarkers.splice(index, 1); // 배열에서도 제거
+        }
+      });
+    },
+    // 범위 밖 제휴 마커 삭제
+    removeOutOfBoundsMarkers2(bounds) {
+      this.coalitionMarkers.forEach((marker, index) => {
+        const markerPosition = marker.getPosition();
+        if (!bounds.hasLatLng(markerPosition)) {
+          marker.setMap(null); // 범위 밖의 마커는 지도에서 제거
+          this.coalitionMarkers.splice(index, 1); // 배열에서도 제거
         }
       });
     },
@@ -106,14 +116,8 @@ export const useMapStore = defineStore('map', {
       const bounds = map.getBounds(); // 현재 지도 범위 가져오기
 
       // 범위 밖 마커 삭제 함수 호출
-      this.removeOutOfBoundsMarkers(bounds);
+      this.removeOutOfBoundsMarkers2(bounds);
 
-      const markerIcons = {
-        GS: '/images/GS.png',
-        olive: '/images/olive.png',
-        coffee: '/images/star.png',
-        cgv: '/images/cgv.png',
-      };
       // 현재 범위에 없는 새로운 마커만 추가
       for (let i = 0; i < this.coalitionApiData.length; i++) {
         const location = this.coalitionApiData[i];
@@ -129,12 +133,33 @@ export const useMapStore = defineStore('map', {
           const existingMarker = this.coalitionMarkers.find((marker) =>
             marker.getPosition().equals(markerPosition)
           );
+
           if (!existingMarker) {
+            let iconUrl = '/images/default.png'; // 기본 아이콘
+            switch (type) {
+              case 'gs':
+                iconUrl = '/images/gs.png';
+                break;
+              case 'coffee':
+                iconUrl = '/images/star.png';
+                break;
+              case 'olive':
+                iconUrl = '/images/olive.png';
+                break;
+              case 'cgv':
+                iconUrl = '/images/cgv.png';
+                break;
+              case 'cu':
+                iconUrl = '/images/cu.png';
+                break;
+              default:
+                console.error(`Unknown marker type: ${type}`);
+            }
             const markerOptions = {
               position: markerPosition,
               map: map,
               icon: {
-                url: markerIcons[type] || '/images/GS.png',
+                url: iconUrl,
                 scaledSize: new naver.maps.Size(50, 50),
                 origin: new naver.maps.Point(0, 0),
                 anchor: new naver.maps.Point(34, 70),

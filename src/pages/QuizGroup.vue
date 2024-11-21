@@ -29,8 +29,7 @@
           <span class="title">KB포인트</span>
           <span class="points">
             <img style="width: 30px" src="@/assets/icons/point.png" />
-            {{ currentQuiz.reward }}</span
-          >
+            {{ currentQuiz.reward }}</span>
         </div>
         <div class="reward-item">
           <i class="fa-regular fa-calendar icon"></i>
@@ -45,20 +44,14 @@
         </div>
       </div>
       <div class="move-button" @click="nextQuiz">
-        <i
-          v-if="currentIndex < data.length - 1"
-          class="fa-solid fa-angle-right"
-        ></i>
+        <i v-if="currentIndex < data.length - 1" class="fa-solid fa-angle-right"></i>
       </div>
     </div>
 
     <!-- indicator -->
     <div class="indicator-container">
-      <div
-        v-for="(item, index) in data.length"
-        :key="index"
-        :class="['indicator', { active: currentIndex === index }]"
-      ></div>
+      <div v-for="(item, index) in data.length" :key="index" :class="['indicator', { active: currentIndex === index }]">
+      </div>
     </div>
 
     <button class="participate-button" @click="goToQuiz">참여하기</button>
@@ -67,11 +60,8 @@
 
     <!-- indicator -->
     <div class="indicator-container">
-      <div
-        v-for="(item, index) in data.length"
-        :key="index"
-        :class="['indicator', { active: currentIndex === index }]"
-      ></div>
+      <div v-for="(item, index) in data.length" :key="index" :class="['indicator', { active: currentIndex === index }]">
+      </div>
     </div>
   </div>
 </template>

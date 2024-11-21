@@ -1,14 +1,14 @@
 <template>
   <div class="roulette-container" @click="closeResult">
     <div class="title-container">
-      <div class="title">점메추 루-렛 !!</div>
+      <div class="title">행운의 룰렛</div>
       <div class="text">KB 스타뱅킹과 함께</div>
-      <div class="text">점심 메뉴를 골라보세요!</div>
+      <div class="text">행운의 룰렛에 도전해세요!</div>
     </div>
 
     <div class="box-roulette">
       <div class="pin"></div>
-      <button type="button" @click="spin" :disabled="isSpinning" class="spin-button">
+      <button type="button" @click="spin" :disabled="isSpinning || isRL" class="spin-button">
         <div class="inner-circle">START</div>
       </button>
 
@@ -45,21 +45,22 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 
 const items = ref([
-  { text: '돈까스', color: '#F2E7ED' },
+  { text: '아메리카노', color: '#F2E7ED' },
   { text: '햄버거', color: '#FFFBE7' },
-  { text: '부대찌개', color: '#FFF1B2' },
-  { text: '카레라이스', color: '#F2E7ED' },
-  { text: '멸치국수', color: '#FFFBE7' },
-  { text: '뚝배기불고기', color: '#FFF1B2' },
+  { text: '문화상품권', color: '#FFF1B2' },
+  { text: '바나나우유', color: '#F2E7ED' },
+  { text: '츄파츕스', color: '#FFFBE7' },
+  { text: '왕꿈틀이', color: '#FFF1B2' },
 ]);
 
 const currentRotation = ref(0);
 const isSpinning = ref(false);
 const selectedItem = ref(null);
 const segmentAngle = computed(() => 360 / items.value.length);
+const isRL = ref(false);
 
 function getItemStyle(index, color) {
   return {
@@ -85,6 +86,10 @@ function getTextStyle(index) {
 function spin() {
   if (isSpinning.value) return;
 
+  let rlCheck = localStorage.getItem('isRool');
+  rlCheck = rlCheck ? true : false;
+  localStorage.setItem('isRool', true);
+
   isSpinning.value = true;
   selectedItem.value = null;
 
@@ -100,6 +105,8 @@ function spin() {
     const itemIndex = Math.floor(((360 - finalAngle) % 360) / segmentAngle.value);
     selectedItem.value = items.value[itemIndex];
   }, 5000);
+
+  isRL.value = true;
 }
 
 function closeResult() {
@@ -107,6 +114,11 @@ function closeResult() {
     selectedItem.value = null;
   }
 }
+
+onMounted(() => {
+  const todayRL = localStorage.getItem('isRool');
+  isRL.value = todayRL ? true : false;
+});
 </script>
 
 <style scoped>
@@ -114,6 +126,7 @@ function closeResult() {
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-top: 50px;
   margin-bottom: 40px;
 }
 
@@ -156,6 +169,7 @@ function closeResult() {
   outline: 15px solid #f3b806b0;
   /* outline: 15px solid #f3b706; */
   outline-offset: 2px; /* 테두리 간격 조정 */
+  margin-top: 40px;
 }
 
 .pin {
@@ -248,8 +262,8 @@ function closeResult() {
 }
 
 .spin-button:disabled .inner-circle {
-  background: #955a1f;
-  color: #955a1f;
+  background: #9d9995;
+  color: #9d9995;
 }
 
 .roulette {
@@ -281,8 +295,8 @@ function closeResult() {
   z-index: 2;
   width: 80px;
   text-align: center;
-  margin-left: -40px;
-  margin-top: -20px;
+  margin-left: -41px;
+  margin-top: -25px;
   line-height: 1.2;
   white-space: normal;
   display: -webkit-box;

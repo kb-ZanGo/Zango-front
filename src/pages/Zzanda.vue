@@ -184,7 +184,7 @@ export default {
       categories: [
         { id: 1, name: '생활꿀팁' },
         { id: 2, name: '부업추천' },
-        { id: 3, name: '할인 및 이벤트' },
+        { id: 3, name: '할인 / 이벤트' },
         { id: 4, name: '여행꿀팁' },
         { id: 5, name: '재테크 팁' },
         { id: 6, name: '성공후기' },

@@ -1,7 +1,36 @@
+<script setup>
+import { ref, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import axios from 'axios';
+
+const route = useRoute();
+const router = useRouter();
+const boardId = route.params.boardId;
+const board = ref({});
+const formattedDate = ref('');
+const regiDate = ref('');
+
+const fetchData = async () => {
+  try {
+    const response = await axios.get(`/api/boards/honeytip/${boardId}`);
+    board.value = response.data;
+    regiDate.value = response.data.regiDate;
+  } catch (error) {
+    console.log('에러에러에러: ', error);
+  }
+};
+
+const goBack = () => {
+  router.push({ name: 'zzanda' });
+};
+
+onMounted(fetchData);
+</script>
+
 <template>
   <div class="head">
     <div class="close">
-      <button>
+      <button @click="goBack">
         <i class="fa-solid fa-chevron-left"></i>
       </button>
     </div>
@@ -12,36 +41,48 @@
     <div class="profile">
       <div class="profile-info">
         <div class="profile-left">
-          <img src="@/assets/icons/stamp.png" class="profile-img" />
+          <img src="@/assets/icons/profile-image.png" class="profile-img" />
           <div class="user-info">
-            <div class="username">오늘점심미정</div>
-            <div class="post-time">12/25 14:30</div>
+            <div class="username">{{ board.userName }}</div>
+            <div class="post-time">
+              {{ regiDate.slice(5, 7) }}/{{ regiDate.slice(8, 10) }} {{ regiDate.slice(11, 13) }}:{{
+                regiDate.slice(14, 16)
+              }}
+            </div>
           </div>
         </div>
       </div>
     </div>
 
     <div class="content">
-      <h2 class="content-title">[성공후기] 부자 된 비법 공개한다</h2>
+      <h2 class="content-title">[{{ board.smallCategoryName }}] {{ board.title }}</h2>
+      <div v-if="board.groupBuyItem !== null" class="groupBuy-container">
+        <div class="GBItem-container">
+          <div class="GBItem">
+            {{ board.groupBuyItem }}
+          </div>
+          <div class="GBPeople">공구인원: {{ board.peopleLimit }}명</div>
+        </div>
+        <div class="refSite">
+          <a :href="board.referenceSite" class="link"> 🔗 참고사이트 </a>
+        </div>
+        <div class="kakaoLink">
+          <a :href="board.kakaoLink" class="link">
+            <img src="@/assets/icons/kakao.png" class="link-image" />
+            오픈채팅 링크
+          </a>
+        </div>
+      </div>
       <p class="content-text">
-        이 책은 부자가 되고 싶어하는 조카의 모습을 보며 진지하게 부자 되는 비법이 무엇인지
-        고민하다가 성장하는 아들에게 언젠가 전해주기 위해 정리한 도서이다. 오랜 기간 모은 다양한
-        부자가 되는 비법에 대해 알아보자. 이 글은 소정의 광고료를 받아 제작된 글입니다
-        https://www.yes24.com/Product/Goods/90405696
+        {{ board.content }}
       </p>
       <div class="interaction">
-        <div class="like">
-          👍
-          <span>25</span>
-        </div>
-        <div class="comment">
-          💬
-          <span>12</span>
-        </div>
+        <div class="like">👍{{ board.likeCnt }}</div>
+        <div class="comment">💬{{ board.commentCnt }}</div>
       </div>
     </div>
 
-    <div class="comments">
+    <!-- <div class="comments">
       <div class="comment-item">
         <div class="comment-profile">
           <img src="@/assets/icons/stamp.png" class="comment-profile-img" />
@@ -98,11 +139,9 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
-
-<script setup></script>
 
 <style scoped>
 .container {
@@ -160,6 +199,14 @@
   border-radius: 50%;
 }
 
+.groupBuy-container {
+  background-color: #f1f1f1;
+  border-radius: 10px;
+  overflow-x: hidden;
+  margin-bottom: 15px;
+  padding: 10px 15px;
+}
+
 .user-info {
   display: flex;
   flex-direction: column;
@@ -180,9 +227,9 @@
 }
 
 .content-title {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: bold;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
 }
 
 .content-text {
@@ -209,6 +256,22 @@
   align-items: center;
   gap: 5px;
   color: #666;
+}
+
+.GBItem-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.GBItem,
+.GBPeople {
+  font-weight: 500;
+  margin-bottom: 5px;
+}
+
+.refSite,
+.kakaoLink {
+  font-size: 0.9rem;
 }
 
 .comments {
@@ -276,5 +339,15 @@
   background-color: white;
   border-radius: 8px;
   padding: 10px;
+}
+
+.link {
+  color: #564a4a;
+  text-decoration: none;
+}
+
+.link-image {
+  width: 17px;
+  margin-right: 5px;
 }
 </style>

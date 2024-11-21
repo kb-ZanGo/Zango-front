@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
 import FullCalendar from '@fullcalendar/vue3';
 import dayGridPlugin from '@fullcalendar/daygrid';
@@ -16,6 +16,7 @@ const incomeMon = ref('');
 const outcomeMon = ref('');
 const incomeDay = ref('');
 const outcomeDay = ref('');
+const router = useRouter();
 const route = useRoute();
 const boardId = route.params.boardId;
 const feedbackData = ref(null);
@@ -33,8 +34,6 @@ const fetchData = async () => {
 
     formattedDate.value = formatDate(regiDate.value);
 
-    const currentDate = ref(new Date());
-    const currentMonth = currentDate.value.getMonth() + 1; // 0부터 시작
     ioCnts.forEach((item) => {
       const formattedDate = `${item.date.slice(0, 4)}-${item.date.slice(4, 6)}-${item.date.slice(
         6
@@ -145,13 +144,17 @@ const calendarOptions = ref({
   },
 });
 
+const goBack = () => {
+  router.push({ name: 'zzanda' });
+};
+
 onMounted(fetchData);
 </script>
 
 <template>
   <div class="head">
     <div class="close">
-      <button>
+      <button @click="goBack">
         <i class="fa-solid fa-chevron-left"></i>
       </button>
     </div>
